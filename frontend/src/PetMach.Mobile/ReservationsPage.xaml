@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.ReservationsPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Reservas" BackgroundColor="{StaticResource Surface}">
+    <ScrollView><VerticalStackLayout Padding="24" Spacing="12">
+        <Label FontAttributes="Bold" FontSize="30" Text="Minhas reservas" /><Button Command="{Binding LoadCommand}" Text="Atualizar" />
+        <Border Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout Spacing="10">
+            <Label FontAttributes="Bold" FontSize="20" Text="Solicitar reserva" />
+            <Picker Title="Escolha seu cão" ItemsSource="{Binding Dogs}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedDog}" />
+            <Picker Title="Escolha o espaço" ItemsSource="{Binding Spaces}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedSpace}" />
+            <Picker Title="Escolha o horário" ItemsSource="{Binding Availability}" ItemDisplayBinding="{Binding Period}" SelectedItem="{Binding SelectedAvailability}" />
+            <Button Command="{Binding CreateCommand}" Text="Solicitar reserva" />
+        </VerticalStackLayout></Border>
+        <CollectionView ItemsSource="{Binding Reservations}" EmptyView="Nenhuma reserva encontrada."><CollectionView.ItemTemplate><DataTemplate>
+            <Border Margin="0,0,0,10" Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout Spacing="6">
+                <Label FontAttributes="Bold" FontSize="19" Text="{Binding SpaceName}" /><Label Text="{Binding DogName, StringFormat='Cão: {0}'}" /><Label Text="{Binding Period}" /><Label FontAttributes="Bold" Text="{Binding StatusLabel}" />
+                <Button Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CancelCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanCancel}" Text="Cancelar reserva" />
+            </VerticalStackLayout></Border>
+        </DataTemplate></CollectionView.ItemTemplate></CollectionView>
+        <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" />
+    </VerticalStackLayout></ScrollView>
+</ContentPage>

@@ -1,0 +1,23 @@
+{
+  "folders": [
+    { "name": "PetMach", "path": "." },
+    { "name": "Backend", "path": "backend" },
+    { "name": "Frontend", "path": "frontend" },
+    { "name": "Documentação", "path": "docs" }
+  ],
+  "settings": {
+    "files.encoding": "utf8",
+    "files.eol": "\n",
+    "editor.formatOnSave": true,
+    "dotnet.defaultSolution": "PetMach.slnx"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-dotnettools.csdevkit",
+      "ms-dotnettools.csharp",
+      "ms-azuretools.vscode-docker",
+      "redhat.vscode-yaml",
+      "bierner.markdown-mermaid"
+    ]
+  }
+}

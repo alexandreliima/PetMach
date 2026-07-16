@@ -1,0 +1,45 @@
+name: petmach
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: petmach
+      POSTGRES_USER: petmach
+      POSTGRES_PASSWORD: ${PETMACH_POSTGRES_PASSWORD:?Defina PETMACH_POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - petmach-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petmach -d petmach"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/src/PetMach.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__petmach: Host=postgres;Port=5432;Database=petmach;Username=petmach;Password=${PETMACH_POSTGRES_PASSWORD}
+    ports:
+      - "5080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  admin:
+    build:
+      context: .
+      dockerfile: backend/src/PetMach.Admin/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5081:8080"
+    depends_on:
+      - api
+
+volumes:
+  petmach-postgres:

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="PetMach.Mobile.RegisterPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark=#201C1A}"
+    Title="Criar conta">
+    <ScrollView>
+        <VerticalStackLayout Padding="28,32" Spacing="14">
+            <Label FontAttributes="Bold" FontSize="34" Text="Comece pelo seu acesso" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark=White}" />
+            <Label Text="Depois você poderá completar seu perfil e cadastrar seus cães." TextColor="{AppThemeBinding Light=#6B5E56, Dark=#D7C9C0}" />
+            <Label FontAttributes="Bold" Text="E-mail" />
+            <Entry Keyboard="Email" Placeholder="voce@exemplo.com" Text="{Binding Email}" />
+            <Label FontAttributes="Bold" Text="Senha" />
+            <Entry IsPassword="True" Placeholder="Mínimo de 12 caracteres" Text="{Binding Password}" />
+            <Label FontAttributes="Bold" Text="Data de nascimento" />
+            <DatePicker Date="{Binding BirthDate}" MaximumDate="{x:Static sys:DateTime.Today}" />
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox IsChecked="{Binding AcceptedTerms}" />
+                <Label VerticalTextAlignment="Center" Text="Aceito os termos de uso" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox IsChecked="{Binding AcceptedPrivacy}" />
+                <Label VerticalTextAlignment="Center" Text="Aceito a política de privacidade" />
+            </HorizontalStackLayout>
+            <Label Text="{Binding StatusMessage}" TextColor="{StaticResource Primary}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <Button Command="{Binding RegisterCommand}" CornerRadius="18" HeightRequest="56" Text="Criar conta" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

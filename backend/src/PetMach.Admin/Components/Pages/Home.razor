@@ -1,0 +1,31 @@
+@page "/"
+
+<PageTitle>PetMach Administração</PageTitle>
+
+<section class="dashboard" aria-labelledby="dashboard-title">
+    <p class="eyebrow">Fundação administrativa</p>
+    <h1 id="dashboard-title">Painel PetMach</h1>
+    <p class="subtitle">
+        A estrutura do painel está pronta. Indicadores e gestões serão conectados aos módulos nas próximas fases.
+    </p>
+
+    <div class="cards" aria-label="Áreas administrativas planejadas">
+        @foreach (string area in Areas)
+        {
+            <article class="card">
+                <span class="status">Planejado</span>
+                <h2>@area</h2>
+            </article>
+        }
+    </div>
+</section>
+
+@code {
+    private static readonly string[] Areas =
+    [
+        "Tutores e cães",
+        "Parceiros e reservas",
+        "Denúncias e moderação",
+        "Parâmetros do sistema",
+    ];
+}

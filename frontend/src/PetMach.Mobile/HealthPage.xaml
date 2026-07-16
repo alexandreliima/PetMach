@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.HealthPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Saúde" BackgroundColor="{StaticResource Surface}">
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <Label FontAttributes="Bold" FontSize="30" Text="Saúde e cuidados" />
+            <Picker ItemDisplayBinding="{Binding Name}" ItemsSource="{Binding Dogs}" SelectedItem="{Binding SelectedDog}" Title="Selecione um cão" />
+            <Button BackgroundColor="Transparent" Command="{Binding LoadHealthCommand}" Text="Atualizar carteira" TextColor="{StaticResource Primary}" />
+            <Border BackgroundColor="#FFF0E8" Padding="18" Stroke="#F3B29F" StrokeShape="RoundRectangle 16"><Label Text="O PetMach ajuda a organizar registros, mas não substitui avaliação ou orientação veterinária." TextColor="#7A3323" /></Border>
+
+            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Nova vacina" />
+                    <Entry Placeholder="Nome da vacina" Text="{Binding VaccineName}" />
+                    <Label Text="Data de aplicação" /><DatePicker Date="{Binding VaccineAppliedOn}" />
+                    <HorizontalStackLayout><CheckBox IsChecked="{Binding VaccineHasNextDose}" /><Label VerticalTextAlignment="Center" Text="Possui próxima dose" /></HorizontalStackLayout>
+                    <DatePicker Date="{Binding VaccineNextDoseOn}" IsVisible="{Binding VaccineHasNextDose}" />
+                    <Button BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="1" Command="{Binding PickProofCommand}" Text="Selecionar comprovante" TextColor="{StaticResource Primary}" />
+                    <Label FontSize="12" Text="{Binding ProofName}" TextColor="#7A6D65" />
+                    <Button Command="{Binding AddVaccinationCommand}" CornerRadius="14" Text="Registrar vacina" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label FontAttributes="Bold" FontSize="18" Text="Vacinas registradas" />
+            <CollectionView HeightRequest="150" ItemsSource="{Binding Vaccinations}" EmptyView="Nenhuma vacina registrada.">
+                <CollectionView.ItemTemplate><DataTemplate><Grid Padding="8" ColumnDefinitions="*,Auto"><VerticalStackLayout><Label FontAttributes="Bold" Text="{Binding VaccineName}" /><Label FontSize="12" Text="{Binding AppliedOn, StringFormat='Aplicada em {0}'}" /></VerticalStackLayout><Label Grid.Column="1" Text="{Binding HasProof, StringFormat='Comprovante: {0}'}" /></Grid></DataTemplate></CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Novo vermífugo" />
+                    <Entry Placeholder="Nome do produto" Text="{Binding DewormingName}" />
+                    <Label Text="Data de aplicação" /><DatePicker Date="{Binding DewormingAppliedOn}" />
+                    <HorizontalStackLayout><CheckBox IsChecked="{Binding DewormingHasNextDose}" /><Label VerticalTextAlignment="Center" Text="Possui próxima dose" /></HorizontalStackLayout>
+                    <DatePicker Date="{Binding DewormingNextDoseOn}" IsVisible="{Binding DewormingHasNextDose}" />
+                    <Button Command="{Binding AddDewormingCommand}" CornerRadius="14" Text="Registrar vermífugo" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label FontAttributes="Bold" FontSize="18" Text="Vermífugos registrados" />
+            <CollectionView HeightRequest="130" ItemsSource="{Binding Dewormings}" EmptyView="Nenhum vermífugo registrado."><CollectionView.ItemTemplate><DataTemplate><VerticalStackLayout Padding="8"><Label FontAttributes="Bold" Text="{Binding ProductName}" /><Label FontSize="12" Text="{Binding AppliedOn, StringFormat='Aplicado em {0}'}" /></VerticalStackLayout></DataTemplate></CollectionView.ItemTemplate></CollectionView>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="#7A3323" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

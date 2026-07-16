@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.DogFormPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:sys="clr-namespace:System;assembly=System.Runtime" Title="Cadastrar cão" BackgroundColor="{StaticResource Surface}">
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="13">
+            <Label FontAttributes="Bold" FontSize="30" Text="Perfil do cão" />
+            <Label Text="Cadastre as informações que ajudam a encontrar boas companhias." TextColor="#6B5E56" />
+            <Button BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="1" Command="{Binding PickPhotoCommand}" CornerRadius="14" Text="Escolher foto" TextColor="{StaticResource Primary}" />
+            <Label HorizontalTextAlignment="Center" Text="{Binding SelectedPhotoName}" TextColor="#7A6D65" />
+            <Label FontAttributes="Bold" Text="Nome" /><Entry Placeholder="Nome do cão" Text="{Binding Name}" />
+            <Label FontAttributes="Bold" Text="Nascimento" /><DatePicker Date="{Binding BirthDate}" MaximumDate="{x:Static sys:DateTime.Today}" />
+            <HorizontalStackLayout><CheckBox IsChecked="{Binding ApproximateAge}" /><Label VerticalTextAlignment="Center" Text="A idade é aproximada" /></HorizontalStackLayout>
+            <Label FontAttributes="Bold" Text="Sexo" /><Picker SelectedIndex="{Binding SexIndex}" Title="Selecione"><Picker.Items><x:String>Fêmea</x:String><x:String>Macho</x:String></Picker.Items></Picker>
+            <Label FontAttributes="Bold" Text="Raça" /><Entry Placeholder="Ex.: Sem raça definida" Text="{Binding Breed}" />
+            <Label FontAttributes="Bold" Text="Porte" /><Picker SelectedIndex="{Binding SizeIndex}" Title="Selecione"><Picker.Items><x:String>Pequeno</x:String><x:String>Médio</x:String><x:String>Grande</x:String><x:String>Gigante</x:String></Picker.Items></Picker>
+            <Label FontAttributes="Bold" Text="Peso aproximado (kg)" /><Entry Keyboard="Numeric" Placeholder="Ex.: 14,5" Text="{Binding WeightKg}" />
+            <HorizontalStackLayout><CheckBox IsChecked="{Binding Neutered}" /><Label VerticalTextAlignment="Center" Text="Castrado" /></HorizontalStackLayout>
+            <Label FontAttributes="Bold" Text="Temperamento" /><Editor HeightRequest="90" Placeholder="Ex.: brincalhão, tranquilo e sociável" Text="{Binding Temperament}" />
+            <Label FontAttributes="Bold" Text="Energia" /><Picker SelectedIndex="{Binding EnergyIndex}"><Picker.Items><x:String>Baixa</x:String><x:String>Moderada</x:String><x:String>Alta</x:String></Picker.Items></Picker>
+            <Label FontAttributes="Bold" Text="Objetivo principal" /><Picker SelectedIndex="{Binding GoalIndex}" Title="Selecione"><Picker.Items><x:String>Amizade</x:String><x:String>Socialização</x:String><x:String>Passeios</x:String><x:String>Eventos</x:String><x:String>Adoção</x:String></Picker.Items></Picker>
+            <Label FontAttributes="Bold" Text="Biografia" /><Editor HeightRequest="90" Text="{Binding Biography}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <Button Command="{Binding SaveCommand}" CornerRadius="16" Text="Salvar cão" />
+            <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="#7A3323" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

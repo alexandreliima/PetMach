@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.PartnerOperationsPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Painel do parceiro" BackgroundColor="{StaticResource Surface}">
+    <ScrollView><VerticalStackLayout Padding="24" Spacing="12">
+        <Label FontAttributes="Bold" FontSize="30" Text="Painel do parceiro" />
+        <Label FontSize="18" Text="{Binding Partner.DisplayName}" /><Button Command="{Binding LoadCommand}" Text="Atualizar" />
+        <Border Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout Spacing="8">
+            <Label FontAttributes="Bold" FontSize="20" Text="Nova disponibilidade" />
+            <Picker Title="Espaço" ItemsSource="{Binding Spaces}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedSpace}" />
+            <DatePicker Date="{Binding AvailabilityDate}" /><TimePicker Time="{Binding StartsAt}" /><TimePicker Time="{Binding EndsAt}" />
+            <Label Text="O horário segue o fuso do estabelecimento." /><Button Command="{Binding CreateAvailabilityCommand}" Text="Criar horário" />
+        </VerticalStackLayout></Border>
+        <Label FontAttributes="Bold" FontSize="22" Text="Reservas recebidas" />
+        <CheckBox IsChecked="{Binding PaymentReceivedOnSite}" /><Label Text="Pagamento recebido presencialmente ao concluir" />
+        <CollectionView ItemsSource="{Binding Reservations}" EmptyView="Nenhuma reserva recebida."><CollectionView.ItemTemplate><DataTemplate>
+            <Border Margin="0,0,0,10" Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout Spacing="6">
+                <Label FontAttributes="Bold" Text="{Binding SpaceName}" /><Label Text="{Binding DogName}" /><Label Text="{Binding Period}" /><Label Text="{Binding StatusLabel}" />
+                <Button Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ConfirmCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanConfirm}" Text="Confirmar" />
+                <Button Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CancelCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanCancel}" Text="Cancelar" />
+                <Button Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CompleteCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanComplete}" Text="Concluir atendimento" />
+                <Button Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.MarkNoShowCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanMarkNoShow}" Text="Registrar ausência" />
+            </VerticalStackLayout></Border>
+        </DataTemplate></CollectionView.ItemTemplate></CollectionView>
+        <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" />
+    </VerticalStackLayout></ScrollView>
+</ContentPage>

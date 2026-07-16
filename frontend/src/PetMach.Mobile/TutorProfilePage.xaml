@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.TutorProfilePage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Perfil do tutor" BackgroundColor="{StaticResource Surface}">
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="14">
+            <Label FontAttributes="Bold" FontSize="30" Text="Seu perfil" TextColor="{StaticResource TextPrimary}" />
+            <Label Text="Essas informações ajudam a criar conexões mais seguras e compatíveis." TextColor="#6B5E56" />
+            <Label FontAttributes="Bold" Text="Nome" />
+            <Entry Placeholder="Seu nome" Text="{Binding FirstName}" />
+            <Label FontAttributes="Bold" Text="Sobrenome" />
+            <Entry Placeholder="Seu sobrenome" Text="{Binding LastName}" />
+            <Label FontAttributes="Bold" Text="Telefone" />
+            <Entry Keyboard="Telephone" Placeholder="Telefone opcional" Text="{Binding Phone}" />
+            <Label FontAttributes="Bold" Text="Cidade" />
+            <Entry Placeholder="Ex.: Lisboa" Text="{Binding City}" />
+            <Label FontAttributes="Bold" Text="Estado ou região" />
+            <Entry Placeholder="Ex.: Lisboa" Text="{Binding State}" />
+            <Label FontAttributes="Bold" Text="Sobre você" />
+            <Editor HeightRequest="110" Placeholder="Conte um pouco sobre sua rotina com cães" Text="{Binding Biography}" />
+            <Label FontAttributes="Bold" Text="Privacidade" />
+            <HorizontalStackLayout><CheckBox IsChecked="{Binding ShowCity}" /><Label VerticalTextAlignment="Center" Text="Permitir exibição da cidade" /></HorizontalStackLayout>
+            <HorizontalStackLayout><CheckBox IsChecked="{Binding AllowDiscovery}" /><Label VerticalTextAlignment="Center" Text="Permitir descoberta dos meus cães" /></HorizontalStackLayout>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <Button Command="{Binding SaveCommand}" CornerRadius="16" Text="Salvar perfil" />
+            <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="#7A3323" />
+            <Label FontSize="12" Text="A localização exata nunca é exibida publicamente." TextColor="#7A6D65" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

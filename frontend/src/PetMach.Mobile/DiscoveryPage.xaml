@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.DiscoveryPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Descoberta" BackgroundColor="{StaticResource Surface}">
+    <ScrollView><VerticalStackLayout Padding="24" Spacing="16">
+        <Label FontAttributes="Bold" FontSize="30" Text="Descobrir cães" />
+        <Picker ItemDisplayBinding="{Binding Name}" ItemsSource="{Binding MyDogs}" SelectedItem="{Binding SelectedDog}" Title="Descobrir com qual cão?" />
+        <Label FontAttributes="Bold" Text="Filtros" />
+        <Entry Placeholder="Raça" Text="{Binding BreedFilter}" />
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Picker ItemsSource="{Binding SexOptions}" SelectedItem="{Binding SexFilter}" Title="Sexo" />
+            <Picker Grid.Column="1" ItemsSource="{Binding SizeOptions}" SelectedItem="{Binding SizeFilter}" Title="Porte" />
+        </Grid>
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Picker ItemsSource="{Binding EnergyOptions}" SelectedItem="{Binding EnergyLevelFilter}" Title="Energia" />
+            <Picker Grid.Column="1" ItemsSource="{Binding GoalOptions}" SelectedItem="{Binding GoalFilter}" Title="Objetivo" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto"><Label Text="Somente castrados" VerticalTextAlignment="Center" /><Switch Grid.Column="1" IsToggled="{Binding OnlyNeutered}" /></Grid>
+        <Grid ColumnDefinitions="*,Auto"><Label Text="Vacinação atualizada" VerticalTextAlignment="Center" /><Switch Grid.Column="1" IsToggled="{Binding OnlyVaccinated}" /></Grid>
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="10"><Button Command="{Binding RefreshCommand}" Text="Aplicar filtros" /><Button Grid.Column="1" Command="{Binding ClearFiltersCommand}" Text="Limpar" /></Grid>
+        <Border BackgroundColor="White" Padding="24" Stroke="#E7D8CD" StrokeShape="RoundRectangle 24">
+            <VerticalStackLayout Spacing="10">
+                <Label FontAttributes="Bold" FontSize="30" Text="{Binding CurrentDog.Name, FallbackValue='Sem novos perfis'}" />
+                <Label FontSize="18" Text="{Binding CurrentDog.Breed}" TextColor="#6B5E56" />
+                <Label Text="{Binding CurrentDog.Region, StringFormat='Região: {0}'}" />
+                <Label Text="{Binding CurrentDog.Temperament}" />
+                <Label Text="{Binding CurrentDog.VaccinationUpToDate, StringFormat='Vacinação atualizada: {0}'}" TextColor="#4D704D" />
+            </VerticalStackLayout>
+        </Border>
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="12"><Button Command="{Binding PassCommand}" CornerRadius="16" Text="Ignorar" /><Button Grid.Column="1" BackgroundColor="{StaticResource Primary}" Command="{Binding LikeCommand}" CornerRadius="16" Text="Curtir" /></Grid>
+        <Button BackgroundColor="Transparent" Command="{Binding BlockCommand}" FontSize="12" Text="Bloquear este tutor" TextColor="#9A3A2A" />
+        <Button Command="{Binding LoadMoreCommand}" Text="Carregar mais perfis" />
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+        <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="#7A3323" />
+        <Label FontSize="12" HorizontalTextAlignment="Center" Text="A localização exata nunca é compartilhada." TextColor="#7A6D65" />
+    </VerticalStackLayout></ScrollView>
+</ContentPage>

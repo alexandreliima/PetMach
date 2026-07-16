@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="PetMach.Mobile.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark=#201C1A}"
+    Title="Entrar">
+    <ScrollView>
+        <VerticalStackLayout Padding="28,40" Spacing="18">
+            <Label FontAttributes="Bold" FontSize="34" Text="Que bom ter você de volta" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark=White}" />
+            <Label Text="Entre para cuidar dos seus cães e conexões." TextColor="{AppThemeBinding Light=#6B5E56, Dark=#D7C9C0}" />
+            <Label FontAttributes="Bold" Text="E-mail" />
+            <Entry Keyboard="Email" Placeholder="voce@exemplo.com" Text="{Binding Email}" />
+            <Label FontAttributes="Bold" Text="Senha" />
+            <Entry IsPassword="True" Placeholder="Sua senha" Text="{Binding Password}" />
+            <Label Text="{Binding StatusMessage}" TextColor="{StaticResource Primary}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <Button Command="{Binding LoginCommand}" CornerRadius="18" HeightRequest="56" Text="Entrar" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

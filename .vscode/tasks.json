@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PetMach: restore",
+      "type": "shell",
+      "command": "${workspaceFolder}\\.dotnet\\dotnet.exe",
+      "args": ["restore", "PetMach.slnx"],
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "PetMach: build",
+      "type": "shell",
+      "command": "${workspaceFolder}\\.dotnet\\dotnet.exe",
+      "args": ["build", "PetMach.slnx", "--no-restore"],
+      "dependsOn": "PetMach: restore",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "PetMach: test",
+      "type": "shell",
+      "command": "${workspaceFolder}\\.dotnet\\dotnet.exe",
+      "args": ["test", "PetMach.slnx", "--no-build"],
+      "dependsOn": "PetMach: build",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "PetMach: API",
+      "type": "shell",
+      "command": "${workspaceFolder}\\.dotnet\\dotnet.exe",
+      "args": ["run", "--project", "backend/src/PetMach.Api/PetMach.Api.csproj"],
+      "problemMatcher": "$msCompile",
+      "isBackground": true
+    },
+    {
+      "label": "PetMach: Admin",
+      "type": "shell",
+      "command": "${workspaceFolder}\\.dotnet\\dotnet.exe",
+      "args": ["run", "--project", "backend/src/PetMach.Admin/PetMach.Admin.csproj"],
+      "problemMatcher": "$msCompile",
+      "isBackground": true
+    }
+  ]
+}

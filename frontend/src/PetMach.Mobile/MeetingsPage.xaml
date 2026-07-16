@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.MeetingsPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Encontros" BackgroundColor="{StaticResource Surface}">
+    <ScrollView><VerticalStackLayout Padding="24" Spacing="12">
+        <Label FontAttributes="Bold" FontSize="30" Text="Encontros" />
+        <Label FontAttributes="Bold" Text="Nova proposta" />
+        <Picker ItemDisplayBinding="{Binding OtherDogName}" ItemsSource="{Binding Matches}" SelectedItem="{Binding SelectedMatch}" Title="Escolha o match" />
+        <DatePicker Date="{Binding ScheduledDate}" />
+        <TimePicker Time="{Binding ScheduledTime}" />
+        <Entry MaxLength="160" Placeholder="Nome do local público" Text="{Binding PlaceName}" />
+        <Editor AutoSize="TextChanges" MaxLength="1000" Placeholder="Observações opcionais" Text="{Binding Notes}" />
+        <Button Command="{Binding ProposeCommand}" Text="Propor encontro" />
+        <Label FontAttributes="Bold" FontSize="22" Text="Propostas" />
+        <CollectionView ItemsSource="{Binding Meetings}" EmptyView="Nenhuma proposta de encontro.">
+            <CollectionView.ItemTemplate><DataTemplate><Border Margin="0,0,0,12" Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout Spacing="6"><Label FontAttributes="Bold" Text="{Binding PlaceName}" /><Label Text="{Binding ScheduledAtUtc, StringFormat='Data: {0:g}'}" /><Label Text="{Binding Status, StringFormat='Estado: {0}'}" /><Label Text="{Binding Notes}" /><Grid ColumnDefinitions="*,*,*" ColumnSpacing="6"><Button Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AcceptCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanRespond}" Text="Aceitar" /><Button Grid.Column="1" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeclineCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanRespond}" Text="Recusar" /><Button Grid.Column="2" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CancelCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanCancel}" Text="Cancelar" /></Grid></VerticalStackLayout></Border></DataTemplate></CollectionView.ItemTemplate>
+        </CollectionView>
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+        <Label Text="{Binding StatusMessage}" HorizontalTextAlignment="Center" />
+        <Label FontSize="12" Text="Combine sempre um local público. Coordenadas exatas não são compartilhadas." />
+    </VerticalStackLayout></ScrollView>
+</ContentPage>

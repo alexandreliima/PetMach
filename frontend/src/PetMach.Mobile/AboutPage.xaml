@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="PetMach.Mobile.AboutPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="{StaticResource Surface}"
+    Title="Conheça o PetMach">
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="18">
+            <Label
+                FontAttributes="Bold"
+                FontSize="14"
+                Text="CONHEÇA O PETMACH"
+                TextColor="{StaticResource Primary}" />
+            <Label
+                FontAttributes="Bold"
+                FontSize="34"
+                Text="Boas experiências começam com cuidado."
+                TextColor="{StaticResource TextPrimary}" />
+            <Label
+                FontSize="17"
+                Text="Uma plataforma para cães e tutores encontrarem companhias, passeios e serviços com mais segurança."
+                TextColor="#6B5E56" />
+
+            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="7">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Descoberta compatível" />
+                    <Label Text="Encontre cães considerando porte, energia, temperamento e objetivos de socialização." TextColor="#6B5E56" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="7">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Conexões com consentimento" />
+                    <Label Text="A conversa será liberada somente quando os dois tutores demonstrarem interesse." TextColor="#6B5E56" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="7">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Saúde organizada" />
+                    <Label Text="Registre vacinas e vermífugos sem tornar informações sensíveis públicas." TextColor="#6B5E56" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="7">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Encontros e parceiros" />
+                    <Label Text="O PetMach está sendo preparado para encontros em espaços parceiros e reservas seguras." TextColor="#6B5E56" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFF0E8" Padding="18" Stroke="#F3B29F" StrokeShape="RoundRectangle 16">
+                <Label Text="Sua localização exata e os dados privados de saúde nunca são exibidos publicamente." TextColor="#7A3323" />
+            </Border>
+            <Button Command="{Binding OpenRegistrationCommand}" CornerRadius="18" HeightRequest="56" Text="Criar minha conta" />
+            <Button
+                BackgroundColor="Transparent"
+                BorderColor="{StaticResource Primary}"
+                BorderWidth="1"
+                Command="{Binding OpenLoginCommand}"
+                CornerRadius="18"
+                HeightRequest="56"
+                Text="Já tenho uma conta"
+                TextColor="{StaticResource Primary}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

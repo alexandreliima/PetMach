@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/Backend/src/">
+    <Project Path="backend/src/PetMach.Admin/PetMach.Admin.csproj" />
+    <Project Path="backend/src/PetMach.Api/PetMach.Api.csproj" />
+    <Project Path="backend/src/PetMach.AppHost/PetMach.AppHost.csproj" />
+    <Project Path="backend/src/PetMach.Application/PetMach.Application.csproj" />
+    <Project Path="backend/src/PetMach.Contracts/PetMach.Contracts.csproj" />
+    <Project Path="backend/src/PetMach.Domain/PetMach.Domain.csproj" />
+    <Project Path="backend/src/PetMach.Infrastructure/PetMach.Infrastructure.csproj" />
+    <Project Path="backend/src/PetMach.ServiceDefaults/PetMach.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/Backend/tests/">
+    <Project Path="backend/tests/PetMach.Api.IntegrationTests/PetMach.Api.IntegrationTests.csproj" />
+    <Project Path="backend/tests/PetMach.Application.Tests/PetMach.Application.Tests.csproj" />
+    <Project Path="backend/tests/PetMach.Architecture.Tests/PetMach.Architecture.Tests.csproj" />
+    <Project Path="backend/tests/PetMach.Domain.Tests/PetMach.Domain.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Frontend/src/">
+    <Project Path="frontend/src/PetMach.Mobile.Core/PetMach.Mobile.Core.csproj" />
+    <Project Path="frontend/src/PetMach.Mobile/PetMach.Mobile.csproj" />
+  </Folder>
+  <Folder Name="/Frontend/tests/">
+    <Project Path="frontend/tests/PetMach.Mobile.Tests/PetMach.Mobile.Tests.csproj" />
+  </Folder>
+</Solution>

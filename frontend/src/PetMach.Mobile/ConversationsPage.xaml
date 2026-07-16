@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.ConversationsPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Conversas" BackgroundColor="{StaticResource Surface}">
+    <Grid Padding="24" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="14">
+        <Label FontAttributes="Bold" FontSize="30" Text="Conversas" />
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Conversations}" EmptyView="Nenhuma conversa ativa.">
+            <CollectionView.ItemTemplate><DataTemplate><Border Margin="0,0,0,12" BackgroundColor="White" Padding="18" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18"><Grid ColumnDefinitions="*,Auto"><VerticalStackLayout><Label FontAttributes="Bold" FontSize="20" Text="{Binding OtherDogName}" /><Label Text="{Binding UnreadCount, StringFormat='Não lidas: {0}'}" TextColor="{StaticResource Primary}" /></VerticalStackLayout><Button Grid.Column="1" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenCommand}" CommandParameter="{Binding .}" Text="Conversar" /></Grid></Border></DataTemplate></CollectionView.ItemTemplate>
+        </CollectionView>
+        <ActivityIndicator Grid.Row="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+        <Label Grid.Row="3" HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" />
+    </Grid>
+</ContentPage>

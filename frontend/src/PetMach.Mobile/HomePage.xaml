@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark=#201C1A}"
+    Shell.NavBarIsVisible="False">
+    <ScrollView>
+        <VerticalStackLayout Padding="28,56,28,32" Spacing="18">
+            <Label FontAttributes="Bold" FontSize="14" Text="PETMACH · FASE 3" TextColor="{StaticResource Primary}" />
+            <Label FontAttributes="Bold" FontSize="34" Text="Tudo para começar com seu cão." TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark=White}" />
+            <Label Text="Explore as telas abaixo. Para salvar dados reais, entre com sua conta." TextColor="#6B5E56" />
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Espaços parceiros" />
+                    <Label Text="Consulte locais preparados para receber cães." TextColor="#6B5E56" />
+                    <Button Command="{Binding OpenPartnerSpacesCommand}" CornerRadius="16" Text="Explorar espaços" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Reservas" />
+                    <Label Text="Solicite horários e acompanhe a confirmação do parceiro." TextColor="#6B5E56" />
+                    <Button Command="{Binding OpenReservationsCommand}" CornerRadius="16" Text="Gerenciar reservas" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="#30475E" Padding="22" Stroke="#30475E" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Área do parceiro" TextColor="White" />
+                    <Label Text="Gerencie horários, confirmações e atendimentos." TextColor="#E9EEF2" />
+                    <Button Command="{Binding OpenPartnerOperationsCommand}" CornerRadius="16" Text="Abrir painel" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Encontros" />
+                    <Label Text="Proponha um encontro em local público para um match ativo." TextColor="#6B5E56" />
+                    <Button Command="{Binding OpenMeetingsCommand}" CornerRadius="16" Text="Gerenciar encontros" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Conversas" />
+                    <Label Text="Converse com tutores dos seus matches ativos." TextColor="#6B5E56" />
+                    <Button Command="{Binding OpenConversationsCommand}" CornerRadius="16" Text="Abrir conversas" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Notificações" />
+                    <Label Text="Acompanhe novos matches e atualizações importantes." TextColor="#6B5E56" />
+                    <Button BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="1" Command="{Binding OpenNotificationsCommand}" CornerRadius="16" Text="Abrir notificações" TextColor="{StaticResource Primary}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Perfil do tutor" />
+                    <Label Text="Apresentação, localização e preferências de privacidade." TextColor="#6B5E56" />
+                    <Button Command="{Binding OpenTutorProfileCommand}" CornerRadius="16" Text="Completar perfil" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="#30475E" Padding="22" Stroke="#30475E" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Descobrir companhias" TextColor="White" />
+                    <Label Text="Conheça cães compatíveis e escolha curtir ou ignorar." TextColor="#E9EEF2" />
+                    <Button BackgroundColor="{StaticResource Primary}" Command="{Binding OpenDiscoveryCommand}" CornerRadius="16" Text="Começar descoberta" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Matches" />
+                    <Label Text="Veja as conexões em que os dois tutores demonstraram interesse." TextColor="#6B5E56" />
+                    <Button BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="1" Command="{Binding OpenMatchesCommand}" CornerRadius="16" Text="Ver matches" TextColor="{StaticResource Primary}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Seus cães" />
+                    <Label Text="Cadastre características, objetivo e fotos de cada cão." TextColor="#6B5E56" />
+                    <Button BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="1" Command="{Binding OpenDogsCommand}" CornerRadius="16" Text="Ver e cadastrar cães" TextColor="{StaticResource Primary}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Saúde e cuidados" />
+                    <Label Text="Organize vacinas, vermífugos e lembretes importantes." TextColor="#6B5E56" />
+                    <Button BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="1" Command="{Binding OpenHealthCommand}" CornerRadius="16" Text="Abrir carteira de saúde" TextColor="{StaticResource Primary}" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

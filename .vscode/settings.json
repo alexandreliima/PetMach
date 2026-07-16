@@ -1,0 +1,6 @@
+{
+  "dotnet.defaultSolution": "PetMach.slnx",
+  "editor.formatOnSave": true,
+  "files.encoding": "utf8",
+  "files.eol": "\n"
+}
