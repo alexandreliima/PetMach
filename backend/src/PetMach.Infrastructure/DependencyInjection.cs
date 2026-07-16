@@ -127,6 +127,7 @@ public static class DependencyInjection
         services.AddScoped<IAdoptionService, AdoptionService>();
         services.AddScoped<IReservationService, ReservationService>();
         services.AddScoped<IBlockService, BlockService>();
+        services.AddScoped<IReportService, ReportService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<ITransactionalEmailSender>(provider =>
         {

@@ -47,6 +47,8 @@ public sealed class PetMachDbContext(DbContextOptions<PetMachDbContext> options)
     public DbSet<AdoptionProfile> AdoptionProfiles => Set<AdoptionProfile>();
     public DbSet<AdoptionApplication> AdoptionApplications => Set<AdoptionApplication>();
     public DbSet<AdoptionApplicationHistory> AdoptionApplicationHistory => Set<AdoptionApplicationHistory>();
+    public DbSet<Report> Reports => Set<Report>();
+    public DbSet<ReportEvidence> ReportEvidence => Set<ReportEvidence>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -304,6 +306,28 @@ public sealed class PetMachDbContext(DbContextOptions<PetMachDbContext> options)
             entity.HasIndex(x => new { x.ApplicationId, x.OccurredAtUtc });
             entity.HasOne<AdoptionApplication>().WithMany().HasForeignKey(x => x.ApplicationId).OnDelete(DeleteBehavior.Cascade);
             entity.HasOne<PetMachUser>().WithMany().HasForeignKey(x => x.ActorUserId).OnDelete(DeleteBehavior.Restrict);
+        });
+        builder.Entity<Report>(entity =>
+        {
+            entity.ToTable("Reports", "moderation");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.TargetType).HasConversion<string>().HasMaxLength(32).IsRequired();
+            entity.Property(x => x.Reason).HasConversion<string>().HasMaxLength(32).IsRequired();
+            entity.Property(x => x.Description).HasMaxLength(2000).IsRequired();
+            entity.Property(x => x.Status).HasConversion<string>().HasMaxLength(24).IsRequired();
+            entity.HasIndex(x => new { x.ReporterUserId, x.TargetType, x.TargetId }).IsUnique().HasFilter("\"Status\" IN ('Submitted', 'UnderReview')");
+            entity.HasIndex(x => new { x.Status, x.CreatedAtUtc });
+            entity.HasOne<PetMachUser>().WithMany().HasForeignKey(x => x.ReporterUserId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne<PetMachUser>().WithMany().HasForeignKey(x => x.ReviewedByUserId).OnDelete(DeleteBehavior.Restrict);
+        });
+        builder.Entity<ReportEvidence>(entity =>
+        {
+            entity.ToTable("ReportEvidence", "moderation");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.StorageKey).HasMaxLength(300).IsRequired();
+            entity.Property(x => x.ContentType).HasMaxLength(50).IsRequired();
+            entity.HasIndex(x => new { x.ReportId, x.CreatedAtUtc });
+            entity.HasOne<Report>().WithMany().HasForeignKey(x => x.ReportId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

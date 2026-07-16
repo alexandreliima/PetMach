@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PetMach.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using PetMach.Infrastructure.Persistence;
 namespace PetMach.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(PetMachDbContext))]
-    partial class PetMachDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260716113815_Phase7ModerationReports")]
+    partial class Phase7ModerationReports
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
