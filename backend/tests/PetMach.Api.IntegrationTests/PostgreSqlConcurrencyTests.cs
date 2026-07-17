@@ -1,75 +1,132 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace PetMach.Api.IntegrationTests;
 
-public sealed class PostgreSqlConcurrencyTests
+[Collection(PostgreSqlTestCollectionDefinition.Name)]
+public sealed class PostgreSqlConcurrencyTests(PostgreSqlFixture fixture) : IAsyncLifetime
 {
+    private static readonly TimeSpan ConcurrentWriteDelay = TimeSpan.FromMilliseconds(100);
+
+    public Task InitializeAsync() => fixture.ResetDatabaseAsync(CancellationToken.None);
+
+    public Task DisposeAsync() => fixture.ResetDatabaseAsync(CancellationToken.None);
+
+    [Fact]
+    [Trait("Category", "PostgreSQL")]
+    public async Task ContainerShouldProvideARealPostgreSqlConnection()
+    {
+        await using NpgsqlConnection connection = new(fixture.ConnectionString);
+        await connection.OpenAsync(CancellationToken.None);
+        await using NpgsqlCommand command = new("SELECT version()", connection);
+
+        string? version = (string?)await command.ExecuteScalarAsync(CancellationToken.None);
+
+        version.Should().StartWith("PostgreSQL 18");
+    }
+
+    [Fact]
+    [Trait("Category", "PostgreSQL")]
+    public async Task AllMigrationsShouldBeAppliedFromScratch()
+    {
+        await using var dbContext = fixture.CreateDbContext();
+
+        string[] knownMigrations = dbContext.Database.GetMigrations().ToArray();
+        string[] appliedMigrations = (await dbContext.Database.GetAppliedMigrationsAsync(CancellationToken.None)).ToArray();
+        string[] pendingMigrations = (await dbContext.Database.GetPendingMigrationsAsync(CancellationToken.None)).ToArray();
+
+        knownMigrations.Should().HaveCount(18);
+        appliedMigrations.Should().Equal(knownMigrations);
+        pendingMigrations.Should().BeEmpty();
+    }
+
+    [Fact]
+    [Trait("Category", "PostgreSQL")]
+    public async Task ResetShouldRemoveTestDataAndPreserveMigrations()
+    {
+        Guid availabilityId = Guid.NewGuid();
+        await using NpgsqlConnection connection = new(fixture.ConnectionString);
+        await connection.OpenAsync(CancellationToken.None);
+        await SetReplicaRoleAsync(connection);
+        await InsertReservationAsync(connection, null, availabilityId);
+
+        (await CountReservationsAsync(connection)).Should().Be(1);
+
+        await fixture.ResetDatabaseAsync(CancellationToken.None);
+
+        (await CountReservationsAsync(connection)).Should().Be(0);
+        await using var dbContext = fixture.CreateDbContext();
+        (await dbContext.Database.GetAppliedMigrationsAsync(CancellationToken.None)).Should().HaveCount(18);
+    }
+
     [Fact]
     [Trait("Category", "PostgreSQL")]
     public async Task ActiveReservationsShouldRejectConcurrentDuplicateAvailability()
     {
-        string? connectionString = Environment.GetEnvironmentVariable("PETMACH_TEST_CONNECTION");
-        if (string.IsNullOrWhiteSpace(connectionString)) return;
-
         Guid availabilityId = Guid.NewGuid();
-        await using NpgsqlConnection first = new(connectionString);
-        await using NpgsqlConnection second = new(connectionString);
-        await first.OpenAsync();
-        await second.OpenAsync();
-        await using NpgsqlTransaction firstTransaction = await first.BeginTransactionAsync();
-        await using NpgsqlTransaction secondTransaction = await second.BeginTransactionAsync();
+        await using NpgsqlConnection first = new(fixture.ConnectionString);
+        await using NpgsqlConnection second = new(fixture.ConnectionString);
+        await first.OpenAsync(CancellationToken.None);
+        await second.OpenAsync(CancellationToken.None);
+        await using NpgsqlTransaction firstTransaction = await first.BeginTransactionAsync(CancellationToken.None);
+        await using NpgsqlTransaction secondTransaction = await second.BeginTransactionAsync(CancellationToken.None);
         await SetReplicaRoleAsync(first, firstTransaction);
         await SetReplicaRoleAsync(second, secondTransaction);
 
         await InsertReservationAsync(first, firstTransaction, availabilityId);
         Task<int> competingInsert = InsertReservationAsync(second, secondTransaction, availabilityId);
-        await Task.Delay(100);
-        await firstTransaction.CommitAsync();
+        await Task.Delay(ConcurrentWriteDelay);
+        await firstTransaction.CommitAsync(CancellationToken.None);
 
         Func<Task> act = async () => _ = await competingInsert;
         PostgresException exception = (await act.Should().ThrowAsync<PostgresException>()).Which;
         exception.SqlState.Should().Be(PostgresErrorCodes.UniqueViolation);
-        await secondTransaction.RollbackAsync();
-        await DeleteReservationAsync(connectionString, availabilityId);
+        exception.ConstraintName.Should().Be("IX_Reservations_AvailabilityId");
+        await secondTransaction.RollbackAsync(CancellationToken.None);
     }
 
     [Fact]
     [Trait("Category", "PostgreSQL")]
     public async Task AdoptionProfileShouldRejectConcurrentMultipleApprovals()
     {
-        string? connectionString = Environment.GetEnvironmentVariable("PETMACH_TEST_CONNECTION");
-        if (string.IsNullOrWhiteSpace(connectionString)) return;
-
         Guid profileId = Guid.NewGuid();
-        await using NpgsqlConnection first = new(connectionString);
-        await using NpgsqlConnection second = new(connectionString);
-        await first.OpenAsync();
-        await second.OpenAsync();
-        await using NpgsqlTransaction firstTransaction = await first.BeginTransactionAsync();
-        await using NpgsqlTransaction secondTransaction = await second.BeginTransactionAsync();
+        await using NpgsqlConnection first = new(fixture.ConnectionString);
+        await using NpgsqlConnection second = new(fixture.ConnectionString);
+        await first.OpenAsync(CancellationToken.None);
+        await second.OpenAsync(CancellationToken.None);
+        await using NpgsqlTransaction firstTransaction = await first.BeginTransactionAsync(CancellationToken.None);
+        await using NpgsqlTransaction secondTransaction = await second.BeginTransactionAsync(CancellationToken.None);
         await SetReplicaRoleAsync(first, firstTransaction);
         await SetReplicaRoleAsync(second, secondTransaction);
 
         await InsertApplicationAsync(first, firstTransaction, profileId);
         Task<int> competingInsert = InsertApplicationAsync(second, secondTransaction, profileId);
-        await Task.Delay(100);
-        await firstTransaction.CommitAsync();
+        await Task.Delay(ConcurrentWriteDelay);
+        await firstTransaction.CommitAsync(CancellationToken.None);
 
         Func<Task> act = async () => _ = await competingInsert;
         PostgresException exception = (await act.Should().ThrowAsync<PostgresException>()).Which;
         exception.SqlState.Should().Be(PostgresErrorCodes.UniqueViolation);
-        await secondTransaction.RollbackAsync();
-        await DeleteApplicationAsync(connectionString, profileId);
+        exception.ConstraintName.Should().Be("IX_Applications_ProfileId");
+        await secondTransaction.RollbackAsync(CancellationToken.None);
     }
 
-    private static async Task SetReplicaRoleAsync(NpgsqlConnection connection, NpgsqlTransaction transaction)
+    private static async Task SetReplicaRoleAsync(
+        NpgsqlConnection connection,
+        NpgsqlTransaction? transaction = null)
     {
-        await using NpgsqlCommand command = new("SET LOCAL session_replication_role = replica", connection, transaction);
-        await command.ExecuteNonQueryAsync();
+        await using NpgsqlCommand command = new(
+            "SET session_replication_role = replica",
+            connection,
+            transaction);
+        await command.ExecuteNonQueryAsync(CancellationToken.None);
     }
 
-    private static async Task<int> InsertReservationAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid availabilityId)
+    private static async Task<int> InsertReservationAsync(
+        NpgsqlConnection connection,
+        NpgsqlTransaction? transaction,
+        Guid availabilityId)
     {
         const string sql = """
             INSERT INTO reservations."Reservations"
@@ -81,10 +138,13 @@ public sealed class PostgreSqlConcurrencyTests
         command.Parameters.AddWithValue("availabilityId", availabilityId);
         command.Parameters.AddWithValue("userId", Guid.NewGuid());
         command.Parameters.AddWithValue("dogId", Guid.NewGuid());
-        return await command.ExecuteNonQueryAsync();
+        return await command.ExecuteNonQueryAsync(CancellationToken.None);
     }
 
-    private static async Task<int> InsertApplicationAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid profileId)
+    private static async Task<int> InsertApplicationAsync(
+        NpgsqlConnection connection,
+        NpgsqlTransaction transaction,
+        Guid profileId)
     {
         const string sql = """
             INSERT INTO adoption."Applications"
@@ -97,28 +157,14 @@ public sealed class PostgreSqlConcurrencyTests
         command.Parameters.AddWithValue("id", Guid.NewGuid());
         command.Parameters.AddWithValue("profileId", profileId);
         command.Parameters.AddWithValue("userId", Guid.NewGuid());
-        return await command.ExecuteNonQueryAsync();
+        return await command.ExecuteNonQueryAsync(CancellationToken.None);
     }
 
-    private static async Task DeleteReservationAsync(string connectionString, Guid availabilityId)
+    private static async Task<long> CountReservationsAsync(NpgsqlConnection connection)
     {
-        await using NpgsqlConnection connection = new(connectionString);
-        await connection.OpenAsync();
-        await using NpgsqlCommand role = new("SET session_replication_role = replica", connection);
-        await role.ExecuteNonQueryAsync();
-        await using NpgsqlCommand delete = new("DELETE FROM reservations.\"Reservations\" WHERE \"AvailabilityId\" = @id", connection);
-        delete.Parameters.AddWithValue("id", availabilityId);
-        await delete.ExecuteNonQueryAsync();
-    }
-
-    private static async Task DeleteApplicationAsync(string connectionString, Guid profileId)
-    {
-        await using NpgsqlConnection connection = new(connectionString);
-        await connection.OpenAsync();
-        await using NpgsqlCommand role = new("SET session_replication_role = replica", connection);
-        await role.ExecuteNonQueryAsync();
-        await using NpgsqlCommand delete = new("DELETE FROM adoption.\"Applications\" WHERE \"ProfileId\" = @id", connection);
-        delete.Parameters.AddWithValue("id", profileId);
-        await delete.ExecuteNonQueryAsync();
+        await using NpgsqlCommand command = new(
+            "SELECT count(*) FROM reservations.\"Reservations\"",
+            connection);
+        return (long)(await command.ExecuteScalarAsync(CancellationToken.None))!;
     }
 }

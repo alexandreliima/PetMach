@@ -9,6 +9,9 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
   </ItemGroup>
-  <ItemGroup><ProjectReference Include="..\..\src\PetMach.Api\PetMach.Api.csproj" /></ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\PetMach.Api\PetMach.Api.csproj" />
+    <ProjectReference Include="..\..\src\PetMach.Infrastructure\PetMach.Infrastructure.csproj" />
+  </ItemGroup>
   <ItemGroup><Using Include="Xunit" /></ItemGroup>
 </Project>
