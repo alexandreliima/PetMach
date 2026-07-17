@@ -24,11 +24,31 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__petmach: Host=postgres;Port=5432;Database=petmach;Username=petmach;Password=${PETMACH_POSTGRES_PASSWORD}
+      Identity__SigningKey: ${Identity__SigningKey:?Defina Identity__SigningKey}
     ports:
       - "5080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/health/ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+
+  migrator:
+    build:
+      context: .
+      dockerfile: backend/src/PetMach.Api/Dockerfile
+      target: migrator
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__petmach: Host=postgres;Port=5432;Database=petmach;Username=petmach;Password=${PETMACH_POSTGRES_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy
+    restart: "no"
 
   admin:
     build:
@@ -36,10 +56,17 @@ services:
       dockerfile: backend/src/PetMach.Admin/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      PetMachApi__BaseUrl: http://api:8080/
     ports:
       - "5081:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/health/ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 
 volumes:
   petmach-postgres:

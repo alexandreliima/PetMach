@@ -148,14 +148,30 @@ Quando Docker estiver disponível:
 
 ```powershell
 $env:PETMACH_POSTGRES_PASSWORD = 'uma-senha-local-forte'
+$env:Identity__SigningKey = 'uma-chave-local-com-pelo-menos-32-caracteres'
 docker compose up --build
 ```
+
+O Compose publica a API em `http://localhost:5080` e o Admin em
+`http://localhost:5081`. Internamente, o Admin acessa a API por
+`http://api:8080`; `localhost` nunca é usado entre containers. PostgreSQL,
+API e Admin possuem health checks, e cada serviço aguarda a prontidão de sua
+dependência.
+
+No Compose, um serviço `migrator` executa as migrations reais e termina antes
+da API ser iniciada. Há uma única instância do migrator na composição, evitando
+corrida entre instâncias da API. Em execução local comum e no Aspire, o comando
+explícito `dotnet ef database update` continua disponível.
 
 Ou execute o AppHost:
 
 ```powershell
 & $dotnet run --project backend/src/PetMach.AppHost/PetMach.AppHost.csproj
 ```
+
+No Aspire, a API recebe a conexão PostgreSQL por referência do AppHost e o
+Admin resolve a API via service discovery. Fora de Development, sem service
+discovery, `PetMachApi__BaseUrl` é obrigatório.
 
 Nenhuma senha real deve ser gravada no repositório. `.env.example` contém somente um placeholder.
 
@@ -184,6 +200,7 @@ Testes de persistência com Testcontainers estão referenciados, mas sua execuç
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | Coletor OpenTelemetry opcional |
 | `ASPNETCORE_ENVIRONMENT` | Ambiente ASP.NET Core |
 | `Identity__SigningKey` | Chave JWT com ao menos 32 bytes; obrigatória fora de Development |
+| `PetMachApi__BaseUrl` | URL da API consumida pelo Admin; no Compose use `http://api:8080/` |
 
 ## Convenções
 
