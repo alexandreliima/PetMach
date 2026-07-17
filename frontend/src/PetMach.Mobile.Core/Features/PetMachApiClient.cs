@@ -196,10 +196,79 @@ public sealed class PetMachApiClient(HttpClient httpClient, AuthenticationSessio
     private async Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, HttpContent? content, CancellationToken cancellationToken)
     {
         string? token = await session.GetAccessTokenAsync(cancellationToken);
-        if (token is null) throw new AuthenticationRequiredException();
-        using HttpRequestMessage request = new(method, path) { Content = content };
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        if (token is null)
+        {
+            throw new AuthenticationRequiredException();
+        }
+
+        BufferedContent? bufferedContent = await BufferAsync(content, cancellationToken);
+        HttpResponseMessage response = await SendOnceAsync(
+            method,
+            path,
+            bufferedContent,
+            token,
+            cancellationToken);
+        if (response.StatusCode != HttpStatusCode.Unauthorized)
+        {
+            return response;
+        }
+
+        response.Dispose();
+        string? refreshedToken = await session.RefreshAfterUnauthorizedAsync(token, cancellationToken);
+        if (refreshedToken is null)
+        {
+            throw new AuthenticationRequiredException();
+        }
+
+        return await SendOnceAsync(
+            method,
+            path,
+            bufferedContent,
+            refreshedToken,
+            cancellationToken);
+    }
+
+    private async Task<HttpResponseMessage> SendOnceAsync(
+        HttpMethod method,
+        string path,
+        BufferedContent? content,
+        string accessToken,
+        CancellationToken cancellationToken)
+    {
+        using HttpRequestMessage request = new(method, path);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        if (content is not null)
+        {
+            ByteArrayContent requestContent = new(content.Body);
+            foreach ((string name, string[] values) in content.Headers)
+            {
+                requestContent.Headers.TryAddWithoutValidation(name, values);
+            }
+
+            request.Content = requestContent;
+        }
+
         return await httpClient.SendAsync(request, cancellationToken);
+    }
+
+    private static async Task<BufferedContent?> BufferAsync(
+        HttpContent? content,
+        CancellationToken cancellationToken)
+    {
+        if (content is null)
+        {
+            return null;
+        }
+
+        using (content)
+        {
+            byte[] body = await content.ReadAsByteArrayAsync(cancellationToken);
+            Dictionary<string, string[]> headers = content.Headers.ToDictionary(
+                header => header.Key,
+                header => header.Value.ToArray(),
+                StringComparer.OrdinalIgnoreCase);
+            return new BufferedContent(body, headers);
+        }
     }
 
     private static async Task<T> ReadAsync<T>(HttpResponseMessage response, CancellationToken cancellationToken)
@@ -213,4 +282,8 @@ public sealed class PetMachApiClient(HttpClient httpClient, AuthenticationSessio
     {
         if (value.HasValue) query.Add($"{name}={value.Value.ToString()!.ToLowerInvariant()}");
     }
+
+    private sealed record BufferedContent(
+        byte[] Body,
+        IReadOnlyDictionary<string, string[]> Headers);
 }

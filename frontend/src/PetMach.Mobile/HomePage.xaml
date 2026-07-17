@@ -93,6 +93,13 @@
                     <Button BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="1" Command="{Binding OpenHealthCommand}" CornerRadius="16" Text="Abrir carteira de saúde" TextColor="{StaticResource Primary}" />
                 </VerticalStackLayout>
             </Border>
+            <Button
+                BackgroundColor="Transparent"
+                BorderColor="{StaticResource Danger}"
+                BorderWidth="1"
+                Command="{Binding LogoutCommand}"
+                Text="Sair"
+                TextColor="{StaticResource Danger}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

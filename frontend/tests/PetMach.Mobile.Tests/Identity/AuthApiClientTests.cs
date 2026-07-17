@@ -24,7 +24,7 @@ public sealed class AuthApiClientTests
         AuthApiClient client = new(httpClient);
 
         Func<Task> action = async () =>
-            _ = await client.LoginAsync(new LoginInput("teste@gmail.com", "senha-incorreta"), CancellationToken.None);
+            _ = await client.LoginAsync(new LoginInput("teste@gmail.com", "senha-incorreta"), TestCancellation.Token);
 
         AuthenticationApiException exception = (await action.Should()
             .ThrowAsync<AuthenticationApiException>())
@@ -34,10 +34,49 @@ public sealed class AuthApiClientTests
         exception.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
+    [Fact]
+    public async Task RefreshEndpointShouldNotRetryItself()
+    {
+        CountingHandler handler = new(
+            new HttpResponseMessage(HttpStatusCode.Unauthorized)
+            {
+                Content = new StringContent(
+                    """{"title":"Refresh inválido.","code":"identity.refresh_invalid"}""",
+                    Encoding.UTF8,
+                    "application/problem+json"),
+            });
+        AuthApiClient client = new(new HttpClient(handler)
+        {
+            BaseAddress = new Uri("http://localhost/"),
+        });
+
+        Func<Task> action = async () =>
+            _ = await client.RefreshAsync("refresh", TestCancellation.Token);
+
+        await action.Should().ThrowAsync<AuthenticationApiException>();
+        handler.Calls.Should().Be(1);
+        handler.LastPath.Should().Be("/api/v1/auth/refresh");
+    }
+
     private sealed class StubHandler(HttpResponseMessage response) : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken) => Task.FromResult(response);
+    }
+
+    private sealed class CountingHandler(HttpResponseMessage response) : HttpMessageHandler
+    {
+        public int Calls { get; private set; }
+        public string? LastPath { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            Calls++;
+            LastPath = request.RequestUri?.AbsolutePath;
+            return Task.FromResult(response);
+        }
     }
 }

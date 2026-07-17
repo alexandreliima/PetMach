@@ -12,7 +12,7 @@ public sealed partial class LoginViewModel(AuthenticationSession session, IMobil
     [ObservableProperty] private bool isBusy;
 
     [RelayCommand]
-    private async Task LoginAsync()
+    private async Task LoginAsync(CancellationToken cancellationToken)
     {
         if (IsBusy) return;
         if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
@@ -24,7 +24,7 @@ public sealed partial class LoginViewModel(AuthenticationSession session, IMobil
         {
             IsBusy = true;
             StatusMessage = "Entrando...";
-            await session.LoginAsync(Email.Trim(), Password, CancellationToken.None);
+            await session.LoginAsync(Email.Trim(), Password, cancellationToken);
             StatusMessage = string.Empty;
             await navigator.GoToAsync("//app/network");
         }

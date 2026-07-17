@@ -1,9 +1,12 @@
 using CommunityToolkit.Mvvm.Input;
+using PetMach.Mobile.Core.Identity;
 using PetMach.Mobile.Core.Navigation;
 
 namespace PetMach.Mobile.Core.Home;
 
-public sealed partial class HomeViewModel(IMobileNavigator navigator)
+public sealed partial class HomeViewModel(
+    IMobileNavigator navigator,
+    ILogoutCoordinator logoutCoordinator)
 {
     [RelayCommand]
     private Task OpenTutorProfileAsync() => navigator.GoToAsync("tutor-profile");
@@ -40,4 +43,8 @@ public sealed partial class HomeViewModel(IMobileNavigator navigator)
 
     [RelayCommand]
     private Task OpenAdoptionAsync() => navigator.GoToAsync("adoption");
+
+    [RelayCommand]
+    private Task LogoutAsync(CancellationToken cancellationToken) =>
+        logoutCoordinator.LogoutAsync(cancellationToken);
 }

@@ -17,10 +17,10 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(_ => { });
 
-        builder.Services.AddSingleton<AppShell>();
-        builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddTransient<AppShell>();
+        builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<OnboardingPage>();
-        builder.Services.AddSingleton<HomePage>();
+        builder.Services.AddTransient<HomePage>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegisterPage>();
         builder.Services.AddTransient<AboutPage>();
@@ -38,6 +38,9 @@ public static class MauiProgram
         builder.Services.AddTransient<ReservationsPage>();
         builder.Services.AddTransient<PartnerOperationsPage>();
         builder.Services.AddTransient<AdoptionPage>();
+        builder.Services.AddSingleton<RootNavigationService>();
+        builder.Services.AddSingleton<IRootNavigationService>(services =>
+            services.GetRequiredService<RootNavigationService>());
         builder.Services.AddSingleton<IMobileNavigator, ShellNavigator>();
         builder.Services.AddTransient<WelcomeViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
@@ -58,11 +61,22 @@ public static class MauiProgram
         builder.Services.AddTransient<PartnerOperationsViewModel>();
         builder.Services.AddTransient<AdoptionViewModel>();
         builder.Services.AddTransient<IChatRealtimeClient, SignalRChatRealtimeClient>();
+        builder.Services.AddSingleton<AuthenticatedConnectionManager>();
+        builder.Services.AddSingleton<IAuthenticatedConnectionManager>(services =>
+            services.GetRequiredService<AuthenticatedConnectionManager>());
         builder.Services.AddSingleton(TimeProvider.System);
-        builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri("http://10.0.2.2:5049/"), Timeout = TimeSpan.FromSeconds(30) });
+        builder.Services.AddSingleton(ApiEndpointOptions.FromEnvironment());
+        builder.Services.AddSingleton(services => new HttpClient
+        {
+            BaseAddress = services.GetRequiredService<ApiEndpointOptions>().BaseAddress,
+            Timeout = TimeSpan.FromSeconds(30),
+        });
         builder.Services.AddSingleton<IAuthApiClient, AuthApiClient>();
         builder.Services.AddSingleton<ITokenStore, SecureTokenStore>();
         builder.Services.AddSingleton<AuthenticationSession>();
+        builder.Services.AddSingleton<AppStartupCoordinator>();
+        builder.Services.AddSingleton<SessionLifecycleCoordinator>();
+        builder.Services.AddSingleton<ILogoutCoordinator, LogoutCoordinator>();
         builder.Services.AddSingleton<IPetMachApiClient, PetMachApiClient>();
         builder.Services.AddSingleton<IDeviceFilePicker, DeviceFilePicker>();
 

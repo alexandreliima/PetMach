@@ -4,8 +4,12 @@ using PetMach.Mobile.Core.Identity;
 
 namespace PetMach.Mobile.Features;
 
-public sealed class SignalRChatRealtimeClient(HttpClient httpClient, AuthenticationSession session) : IChatRealtimeClient
+public sealed class SignalRChatRealtimeClient(
+    HttpClient httpClient,
+    AuthenticationSession session,
+    AuthenticatedConnectionManager connectionManager) : IChatRealtimeClient
 {
+    private static readonly TimeSpan SessionOperationTimeout = TimeSpan.FromSeconds(30);
     private HubConnection? connection;
     private Guid activeConversationId;
 
@@ -20,7 +24,11 @@ public sealed class SignalRChatRealtimeClient(HttpClient httpClient, Authenticat
         connection = new HubConnectionBuilder()
             .WithUrl(new Uri(httpClient.BaseAddress!, "hubs/chat"), options =>
             {
-                options.AccessTokenProvider = () => session.GetAccessTokenAsync(CancellationToken.None);
+                options.AccessTokenProvider = async () =>
+                {
+                    using CancellationTokenSource timeout = new(SessionOperationTimeout);
+                    return await session.GetAccessTokenAsync(timeout.Token);
+                };
             })
             .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10)])
             .Build();
@@ -28,23 +36,50 @@ public sealed class SignalRChatRealtimeClient(HttpClient httpClient, Authenticat
         connection.Reconnecting += _ => Reconnecting?.Invoke() ?? Task.CompletedTask;
         connection.Reconnected += async _ =>
         {
-            await JoinAsync(CancellationToken.None);
+            using CancellationTokenSource timeout = new(SessionOperationTimeout);
+            await JoinAsync(timeout.Token);
             if (Reconnected is not null) await Reconnected.Invoke();
         };
-        await connection.StartAsync(cancellationToken);
-        await JoinAsync(cancellationToken);
+        try
+        {
+            await connection.StartAsync(cancellationToken);
+            await JoinAsync(cancellationToken);
+            connectionManager.Register(this);
+        }
+        catch
+        {
+            using CancellationTokenSource timeout = new(SessionOperationTimeout);
+            await StopAsync(timeout.Token);
+            throw;
+        }
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (connection is null) return;
-        await connection.StopAsync(cancellationToken);
-        await connection.DisposeAsync();
-        connection = null;
-        activeConversationId = Guid.Empty;
+        if (connection is null)
+        {
+            connectionManager.Unregister(this);
+            return;
+        }
+
+        try
+        {
+            await connection.StopAsync(cancellationToken);
+            await connection.DisposeAsync();
+        }
+        finally
+        {
+            connection = null;
+            activeConversationId = Guid.Empty;
+            connectionManager.Unregister(this);
+        }
     }
 
-    public async ValueTask DisposeAsync() => await StopAsync(CancellationToken.None);
+    public async ValueTask DisposeAsync()
+    {
+        using CancellationTokenSource timeout = new(SessionOperationTimeout);
+        await StopAsync(timeout.Token);
+    }
 
     private Task JoinAsync(CancellationToken cancellationToken) =>
         connection is null || activeConversationId == Guid.Empty

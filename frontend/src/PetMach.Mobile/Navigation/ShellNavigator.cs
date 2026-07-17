@@ -3,38 +3,36 @@ using PetMach.Mobile.Core.Navigation;
 
 namespace PetMach.Mobile.Navigation;
 
-public sealed class ShellNavigator(IServiceProvider services) : IMobileNavigator
+public sealed class ShellNavigator(
+    IServiceProvider services,
+    RootNavigationService rootNavigation) : IMobileNavigator
 {
     public async Task GoToAsync(string route)
     {
-        IReadOnlyList<Window>? windows = Application.Current?.Windows;
-        Window window = windows is { Count: > 0 }
-            ? windows[0]
-            : throw new InvalidOperationException("A janela do aplicativo ainda não está disponível.");
-
         if (route.StartsWith("//app/", StringComparison.Ordinal))
         {
-            AppShell shell = services.GetRequiredService<AppShell>();
-            window.Page = shell;
-            await shell.GoToAsync(route);
+            using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(15));
+            await rootNavigation.ShowAuthenticatedRootAsync(route, timeout.Token);
             return;
         }
 
-        if (window.Page is Shell shellPage)
+        await MainThread.InvokeOnMainThreadAsync(async () =>
         {
-            await shellPage.GoToAsync(route);
-            return;
-        }
+            Window window = rootNavigation.GetWindow();
+            if (window.Page is Shell shell)
+            {
+                await shell.GoToAsync(route);
+                return;
+            }
 
-        Page page = CreatePublicPage(route);
-        if (window.Page is not NavigationPage navigation)
-        {
-            navigation = new NavigationPage(page);
-            window.Page = navigation;
-            return;
-        }
+            Page page = CreatePublicPage(route);
+            if (window.Page is not NavigationPage navigation)
+            {
+                throw new InvalidOperationException("A raiz pública não está disponível.");
+            }
 
-        await navigation.PushAsync(page);
+            await navigation.PushAsync(page);
+        });
     }
 
     private Page CreatePublicPage(string route)

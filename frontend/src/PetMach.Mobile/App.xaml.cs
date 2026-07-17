@@ -1,26 +1,44 @@
-using Microsoft.Extensions.DependencyInjection;
+using PetMach.Mobile.Core.Identity;
+using PetMach.Mobile.Navigation;
 
 namespace PetMach.Mobile;
 
 public partial class App : Application
 {
-    private readonly IServiceProvider services;
+    private readonly RootNavigationService rootNavigation;
+    private readonly AppStartupCoordinator startup;
+    private readonly SessionLifecycleCoordinator sessionLifecycle;
 
-    public App(IServiceProvider services)
+    public App(
+        RootNavigationService rootNavigation,
+        AppStartupCoordinator startup,
+        SessionLifecycleCoordinator sessionLifecycle)
     {
         InitializeComponent();
-        this.services = services;
+        this.rootNavigation = rootNavigation;
+        this.startup = startup;
+        this.sessionLifecycle = sessionLifecycle;
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        MainPage mainPage = services.GetRequiredService<MainPage>();
-        NavigationPage.SetHasNavigationBar(mainPage, false);
-        NavigationPage navigation = new(mainPage)
+        CancellationTokenSource lifetime = new();
+        Window window = new(rootNavigation.CreateInitialPublicRoot());
+        window.Destroying += (_, _) => lifetime.Cancel();
+        rootNavigation.AttachWindow(window);
+        sessionLifecycle.Start();
+        _ = InitializeAsync(lifetime.Token);
+        return window;
+    }
+
+    private async Task InitializeAsync(CancellationToken cancellationToken)
+    {
+        try
         {
-            BarBackgroundColor = Color.FromArgb("#FFF9F3"),
-            BarTextColor = Color.FromArgb("#123C38"),
-        };
-        return new Window(navigation);
+            await startup.InitializeAsync(cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
     }
 }

@@ -3,27 +3,53 @@ using PetMach.Mobile.Core.Identity;
 
 namespace PetMach.Mobile.Identity;
 
-public sealed class SecureTokenStore : ITokenStore
+public sealed class SecureTokenStore : ITokenStore, IDisposable
 {
     private const string SessionKey = "petmach.auth.session";
+    private readonly SemaphoreSlim gate = new(1, 1);
 
     public async Task<StoredSession?> GetAsync(CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        string? json = await SecureStorage.Default.GetAsync(SessionKey);
-        return json is null ? null : JsonSerializer.Deserialize<StoredSession>(json);
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            string? json = await SecureStorage.Default.GetAsync(SessionKey);
+            cancellationToken.ThrowIfCancellationRequested();
+            return json is null ? null : JsonSerializer.Deserialize<StoredSession>(json);
+        }
+        finally
+        {
+            gate.Release();
+        }
     }
 
-    public Task SaveAsync(StoredSession session, CancellationToken cancellationToken)
+    public async Task SaveAsync(StoredSession session, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        return SecureStorage.Default.SetAsync(SessionKey, JsonSerializer.Serialize(session));
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await SecureStorage.Default.SetAsync(SessionKey, JsonSerializer.Serialize(session));
+        }
+        finally
+        {
+            gate.Release();
+        }
     }
 
-    public Task ClearAsync(CancellationToken cancellationToken)
+    public async Task ClearAsync(CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        SecureStorage.Default.Remove(SessionKey);
-        return Task.CompletedTask;
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            SecureStorage.Default.Remove(SessionKey);
+        }
+        finally
+        {
+            gate.Release();
+        }
     }
+
+    public void Dispose() => gate.Dispose();
 }

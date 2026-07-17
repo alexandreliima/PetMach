@@ -2,8 +2,9 @@ namespace PetMach.Mobile;
 
 public sealed class AppShell : Shell
 {
+    private static int routesRegistered;
+
     public AppShell(
-        MainPage mainPage,
         DiscoveryPage discoveryPage,
         MatchesPage matchesPage,
         ConversationsPage conversationsPage,
@@ -12,15 +13,6 @@ public sealed class AppShell : Shell
         FlyoutBehavior = FlyoutBehavior.Disabled;
         FlyoutIsPresented = false;
         FlyoutBackdrop = Brush.Transparent;
-
-        ShellContent welcome = new()
-        {
-            Title = "Boas-vindas",
-            Route = "welcome",
-            Content = mainPage,
-        };
-        Shell.SetTabBarIsVisible(welcome, false);
-        Items.Add(welcome);
 
         TabBar app = new() { Route = "app" };
         app.Items.Add(new ShellContent
@@ -53,23 +45,22 @@ public sealed class AppShell : Shell
         });
         Items.Add(app);
 
-        Routing.RegisterRoute("login", typeof(LoginPage));
-        Routing.RegisterRoute("onboarding", typeof(OnboardingPage));
-        Routing.RegisterRoute("register", typeof(RegisterPage));
-        Routing.RegisterRoute("about", typeof(AboutPage));
-        Routing.RegisterRoute("tutor-profile", typeof(TutorProfilePage));
-        Routing.RegisterRoute("dogs", typeof(DogsPage));
-        Routing.RegisterRoute("dog-form", typeof(DogFormPage));
-        Routing.RegisterRoute("health", typeof(HealthPage));
-        Routing.RegisterRoute("discovery", typeof(DiscoveryPage));
-        Routing.RegisterRoute("matches", typeof(MatchesPage));
-        Routing.RegisterRoute("notifications", typeof(NotificationsPage));
-        Routing.RegisterRoute("conversations", typeof(ConversationsPage));
-        Routing.RegisterRoute("chat", typeof(ChatPage));
-        Routing.RegisterRoute("meetings", typeof(MeetingsPage));
-        Routing.RegisterRoute("partner-spaces", typeof(PartnerSpacesPage));
-        Routing.RegisterRoute("reservations", typeof(ReservationsPage));
-        Routing.RegisterRoute("partner-operations", typeof(PartnerOperationsPage));
-        Routing.RegisterRoute("adoption", typeof(AdoptionPage));
+        if (Interlocked.Exchange(ref routesRegistered, 1) == 0)
+        {
+            Routing.RegisterRoute("tutor-profile", typeof(TutorProfilePage));
+            Routing.RegisterRoute("dogs", typeof(DogsPage));
+            Routing.RegisterRoute("dog-form", typeof(DogFormPage));
+            Routing.RegisterRoute("health", typeof(HealthPage));
+            Routing.RegisterRoute("discovery", typeof(DiscoveryPage));
+            Routing.RegisterRoute("matches", typeof(MatchesPage));
+            Routing.RegisterRoute("notifications", typeof(NotificationsPage));
+            Routing.RegisterRoute("conversations", typeof(ConversationsPage));
+            Routing.RegisterRoute("chat", typeof(ChatPage));
+            Routing.RegisterRoute("meetings", typeof(MeetingsPage));
+            Routing.RegisterRoute("partner-spaces", typeof(PartnerSpacesPage));
+            Routing.RegisterRoute("reservations", typeof(ReservationsPage));
+            Routing.RegisterRoute("partner-operations", typeof(PartnerOperationsPage));
+            Routing.RegisterRoute("adoption", typeof(AdoptionPage));
+        }
     }
 }

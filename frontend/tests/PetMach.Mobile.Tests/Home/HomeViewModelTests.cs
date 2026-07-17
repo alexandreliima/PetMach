@@ -1,5 +1,6 @@
 using FluentAssertions;
 using PetMach.Mobile.Core.Home;
+using PetMach.Mobile.Core.Identity;
 using PetMach.Mobile.Core.Navigation;
 
 namespace PetMach.Mobile.Tests.Home;
@@ -22,7 +23,7 @@ public sealed class HomeViewModelTests
     public async Task FeatureCommandsShouldOpenTheExpectedRoute(string feature, string route)
     {
         Navigator navigator = new();
-        HomeViewModel viewModel = new(navigator);
+        HomeViewModel viewModel = new(navigator, new Logout());
 
         if (feature == "profile") await viewModel.OpenTutorProfileCommand.ExecuteAsync(null);
         else if (feature == "dogs") await viewModel.OpenDogsCommand.ExecuteAsync(null);
@@ -44,5 +45,10 @@ public sealed class HomeViewModelTests
     {
         public string? Route { get; private set; }
         public Task GoToAsync(string route) { Route = route; return Task.CompletedTask; }
+    }
+
+    private sealed class Logout : ILogoutCoordinator
+    {
+        public Task LogoutAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }
