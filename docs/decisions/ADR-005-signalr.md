@@ -1,6 +1,6 @@
 # ADR-005 — SignalR para tempo real
 
-- Status: Proposta
+- Status: Aceita
 - Data: 2026-07-13
 
 ## Contexto

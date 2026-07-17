@@ -1,6 +1,8 @@
 # Guia didático — Fase 3, incremento 1
 
-> Este documento complementa `docs/guia-do-projeto.md` e `docs/guia-fase-2-identity.md`. A Fase 3 ainda está em andamento.
+> Registro histórico do primeiro incremento da Fase 3. Para o estado atual,
+> consulte [Estado técnico atual](current-state.md) e
+> [Guia didático do PetMach](guia-do-projeto.md).
 
 ## O que mudou
 
@@ -213,4 +215,3 @@ Esses resultados foram conferidos no relatório e a presença do código foi ins
 3. Implementar galeria e uploads protegidos.
 4. Implementar vacinas, vermifugação, comprovantes e indicador público derivado.
 5. Validar persistência com PostgreSQL/Testcontainers quando Docker estiver disponível.
-

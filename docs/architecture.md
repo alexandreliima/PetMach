@@ -1,8 +1,11 @@
-# Arquitetura proposta
+# Arquitetura atual
 
 ## Direção
 
-O PetMach será um monólito modular implantável como uma API principal, um painel Admin separado e um cliente mobile. O backend compartilha processo e banco PostgreSQL, mas mantém limites de módulos verificáveis. A separação `backend/` e `frontend/` é física; contratos HTTP versionados são a fronteira entre ambos.
+O PetMach é um monólito modular implantável como uma API principal, um painel
+Admin separado e um cliente mobile. O backend compartilha o banco PostgreSQL,
+mas mantém limites de módulos verificáveis. A separação `backend/` e
+`frontend/` é física; contratos HTTP versionados são a fronteira entre ambos.
 
 ```mermaid
 flowchart LR
@@ -10,13 +13,15 @@ flowchart LR
     Admin["PetMach Admin (Blazor)"] -->|"Aplicação e políticas"| API
     API --> Modules["Módulos de negócio"]
     Modules --> DB[("PostgreSQL")]
+    Migrator["Migrator EF Core"] --> DB
     Modules --> Storage["Storage de imagens"]
     AppHost[".NET Aspire AppHost"] -. orquestra .-> API
     AppHost -. orquestra .-> Admin
     AppHost -. orquestra .-> DB
+    Tests["Testcontainers"] -. PostgreSQL 18 descartável .-> TestDB[("Banco de teste")]
 ```
 
-## Estrutura planejada
+## Estrutura real
 
 ```text
 PetMach/
@@ -30,7 +35,6 @@ PetMach/
 ├── docker-compose.yml
 ├── .editorconfig
 ├── .gitignore
-├── .github/workflows/ci.yml
 ├── backend/
 │   ├── src/
 │   │   ├── PetMach.Api/
@@ -51,11 +55,11 @@ PetMach/
 │   ├── src/PetMach.Mobile/
 │   └── tests/PetMach.Mobile.Tests/
 └── docs/
-    ├── decisions/
-    ├── diagrams/
     ├── api/
-    ├── database/
-    └── product/
+    ├── decisions/
+    ├── current-state.md
+    ├── operations.md
+    └── testing.md
 ```
 
 Os projetos de backend usam pastas de primeiro nível por módulo (`Identity`, `Tutors`, `Dogs` etc.) em Domain, Application e Infrastructure. Isso preserva as quatro dependências arquiteturais sem criar dezenas de assemblies no início. Testes arquiteturais impedem dependências proibidas. Se o acoplamento crescer, um módulo pode ser extraído para assemblies próprios sem alterar seus contratos externos.
@@ -66,13 +70,13 @@ Os projetos de backend usam pastas de primeiro nível por módulo (`Identity`, `
 flowchart LR
     Api --> Application
     Api --> Infrastructure
-    Admin --> Application
-    Admin --> Infrastructure
+    Admin -->|"HTTP /api/v1"| Api
+    Admin --> Contracts
     Infrastructure --> Application
     Infrastructure --> Domain
     Application --> Domain
     Application --> Contracts
-    Mobile --> Contracts["Contratos HTTP gerados/compartilhados sem domínio"]
+    Mobile -->|"HTTP /api/v1"| Api
 ```
 
 - Domain não depende de Application, Infrastructure, API ou UI.
@@ -80,7 +84,10 @@ flowchart LR
 - Infrastructure implementa persistência, Identity, storage, relógio e integrações.
 - API autentica, autoriza, valida transporte e converte resultados em Problem Details.
 - Contracts contém DTOs públicos estáveis, paginação e eventos de integração deliberados; nunca entidades.
-- Mobile consome a API e não referencia projetos internos do backend. Compartilhamento de contratos deve ocorrer por cliente OpenAPI ou pacote dedicado sem lógica de domínio.
+- Admin referencia Contracts para interpretar respostas, mas acessa operações de
+  negócio somente pela API.
+- Mobile mantém modelos de transporte próprios no núcleo compartilhado, consome
+  a API e não referencia projetos internos do backend.
 
 ## Módulos
 
@@ -108,11 +115,17 @@ As dependências da tabela são relações de negócio, não autorização para 
 ## Persistência
 
 - Um PostgreSQL por implantação e um `DbContext` inicial, com mapeamentos agrupados por módulo e schemas lógicos por módulo quando isso não prejudicar Identity/migrations.
-- Migration única e ordenada no projeto Infrastructure durante o MVP.
+- Dezoito migrations ordenadas no projeto Infrastructure formam o schema
+  atual. No Compose, um migrator dedicado as aplica antes de liberar a API.
 - Constraints e índices garantem invariantes concorrentes que validação de aplicação não consegue garantir.
 - `Guid` gerado pela aplicação como identificador uniforme; `DateTimeOffset` UTC para eventos.
 - Localização começa com tipos/consultas PostgreSQL adequados e cálculo no servidor. PostGIS somente após validação de necessidade e disponibilidade operacional.
 - Redis não é fonte de verdade e não entra no caminho crítico inicial.
+
+Testes de persistência usam a imagem fixada `postgres:18.0-alpine` via
+Testcontainers, aplicam todas as migrations e limpam dados entre casos. Docker
+indisponível falha a fixture explicitamente; não existe aprovação silenciosa,
+`EnsureCreated`, SQLite ou EF Core InMemory nesse caminho.
 
 ## API e erros
 
@@ -189,6 +202,35 @@ sequenceDiagram
 ## Observabilidade
 
 Aspire Service Defaults configura OpenTelemetry, health checks e service discovery. Cada requisição recebe correlation/trace ID. Métricas evitam dimensões com usuário, coordenada ou conteúdo de mensagem. Logs estruturados registram ação, resultado e identificadores técnicos necessários, nunca segredos ou saúde sensível.
+
+No Compose, PostgreSQL usa `pg_isready`; API e Admin expõem `/health/live` e
+`/health/ready`. A readiness da API inclui `PetMachDbContext`, portanto também
+confirma a conexão API → PostgreSQL. A ordem de prontidão é PostgreSQL saudável,
+migrator concluído, API saudável e Admin saudável.
+
+## Navegação e sessão Mobile
+
+O Mobile inicia com uma raiz pública criada por `RootNavigationService`.
+Restauração ou autenticação válida substitui a raiz por uma nova instância
+transiente de `AppShell`; logout ou invalidação substitui novamente por uma
+nova raiz pública. Nenhuma página MAUI é singleton.
+
+Tokens passam exclusivamente por `ITokenStore`/`SecureStorage`. Renovações
+simultâneas compartilham uma única operação, e uma requisição protegida recebe
+no máximo uma repetição após `401`. Login e refresh usam `AuthApiClient`,
+separado do mecanismo de repetição das chamadas protegidas.
+
+## Formas de orquestração
+
+- **local:** processos API/Admin via `dotnet run`, PostgreSQL local ou container
+  e migrations EF explícitas;
+- **Docker Compose:** PostgreSQL, migrator, API e Admin em containers, com
+  dependências condicionadas por saúde/conclusão;
+- **Aspire:** PostgreSQL, API e Admin para desenvolvimento, com referências,
+  service discovery e dashboard.
+
+Os Dockerfiles finais executam com o `APP_UID` não privilegiado fornecido pelas
+imagens oficiais .NET 10. Consulte [Operação e execução](operations.md).
 
 ## Evolução
 

@@ -1,6 +1,6 @@
 # ADR-002 — .NET MAUI para o aplicativo mobile
 
-- Status: Proposta
+- Status: Aceita
 - Data: 2026-07-13
 
 ## Contexto

@@ -1,6 +1,6 @@
 # ADR-004 — ASP.NET Core Identity
 
-- Status: Proposta
+- Status: Aceita
 - Data: 2026-07-13
 
 ## Contexto

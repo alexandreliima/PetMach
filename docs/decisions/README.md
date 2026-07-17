@@ -1,6 +1,7 @@
 # Registros de decisão arquitetural
 
-As decisões estão com status **Proposta** até a aprovação da Fase 0. Uma decisão aceita não é reescrita para ocultar mudanças: crie novo ADR que a substitua.
+As decisões iniciais foram aceitas e orientam a implementação atual. Uma decisão
+aceita não é reescrita para ocultar mudanças: crie novo ADR que a substitua.
 
 - ADR-001: Monólito modular
 - ADR-002: .NET MAUI

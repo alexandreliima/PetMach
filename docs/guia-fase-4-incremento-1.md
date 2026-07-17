@@ -1,6 +1,8 @@
 # Guia didático — Fase 4, incremento 1
 
-> Este documento complementa os demais guias em `docs/`. A Fase 4 continua em andamento.
+> Registro histórico do primeiro incremento da Fase 4. Para o estado atual,
+> consulte [Estado técnico atual](current-state.md) e
+> [Guia didático do PetMach](guia-do-projeto.md).
 
 ## Resultado do incremento
 
@@ -225,4 +227,3 @@ Essas limitações não anulam o build e os testes locais, mas continuam sendo g
 5. Implementar paginação incremental.
 6. Criar notificação interna de novo match.
 7. Adicionar testes concorrentes com PostgreSQL real quando Docker estiver disponível.
-

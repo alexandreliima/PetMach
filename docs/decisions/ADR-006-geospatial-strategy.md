@@ -1,6 +1,6 @@
 # ADR-006 — Estratégia geoespacial e privacidade
 
-- Status: Proposta
+- Status: Aceita
 - Data: 2026-07-13
 
 ## Contexto

@@ -1,6 +1,6 @@
 # ADR-003 — PostgreSQL como fonte de verdade
 
-- Status: Proposta
+- Status: Aceita
 - Data: 2026-07-13
 
 ## Contexto

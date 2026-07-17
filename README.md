@@ -2,25 +2,43 @@
 
 Plataforma de socialização, experiências e serviços para cães e seus tutores. O PetMach começa como um **monólito modular**, com backend e frontend separados e limites arquiteturais testados.
 
-## Estado
+## Estado atual
 
-Fase 3 em andamento. A identidade está implementada e o aplicativo já possui fluxo visual de boas-vindas, cadastro, login e home inicial. A primeira fatia de perfil do tutor também está disponível na API.
+O repositório contém as fatias funcionais de identidade, tutores, pets, saúde,
+descoberta, matches, chat, encontros, parceiros, reservas, adoção e moderação.
+O Mobile possui navegação e ciclo de sessão estabilizados, e o Admin oferece o
+fluxo administrativo de denúncias e ações de moderação.
 
-Docker/Aspire com containers e o build iOS ainda não foram executados porque não há Docker nem Mac disponíveis nesta máquina. Essas limitações não removem os projetos ou configurações correspondentes.
+PostgreSQL real está validado em dois caminhos:
+
+- os testes de persistência iniciam `postgres:18.0-alpine` automaticamente via
+  Testcontainers, aplicam as 18 migrations e exercitam constraints
+  concorrentes;
+- Docker Compose inicia PostgreSQL, migrator, API e Admin com health checks e
+  dependências por prontidão.
+
+Consulte [Estado técnico atual](docs/current-state.md),
+[Operação e execução](docs/operations.md) e [Testes](docs/testing.md). Os
+relatórios `docs/phase-*.md` são registros históricos e podem mencionar
+limitações removidas posteriormente.
 
 ## Fundação disponível
 
 - ASP.NET Core Web API com `/api/v1`, OpenAPI, Problem Details e controllers por feature.
 - Rate limiting global, output cache, autenticação/autorizações preparadas e SignalR.
-- ASP.NET Core Identity com IDs `Guid` e migration inicial PostgreSQL.
+- ASP.NET Core Identity com IDs `Guid`, refresh rotativo e migrations
+  PostgreSQL.
 - EF Core/Npgsql sem repositório genérico ou Unit of Work redundante.
 - Health checks de liveness/readiness, OpenTelemetry e service discovery.
 - Blazor Web App Interactive Server para administração.
 - .NET Aspire AppHost com API, Admin e PostgreSQL.
-- .NET MAUI com XAML, MVVM, DI e shell inicial; Android local e iOS condicionado a macOS.
-- Testes de domínio, aplicação, arquitetura, API e ViewModel mobile.
+- .NET MAUI com XAML, MVVM, DI, sessão em `SecureStorage`, navegação por troca
+  de raiz e Shell autenticada; Android local e iOS condicionado a macOS.
+- Testes de domínio, aplicação, arquitetura, API, persistência PostgreSQL e
+  núcleo mobile.
 - Central Package Management, analyzers, nullable e warnings como erros em Domain/Application.
-- Dockerfiles, Docker Compose, scripts e tarefas para VS Code.
+- Dockerfiles multi-stage executando com usuário não privilegiado, migrator
+  dedicado, Docker Compose, scripts e tarefas para VS Code.
 
 ## Estrutura
 
@@ -147,9 +165,12 @@ Nova migration:
 Quando Docker estiver disponível:
 
 ```powershell
-$env:PETMACH_POSTGRES_PASSWORD = 'uma-senha-local-forte'
-$env:Identity__SigningKey = 'uma-chave-local-com-pelo-menos-32-caracteres'
-docker compose up --build
+Copy-Item .env.example .env
+# Edite .env e substitua os dois placeholders.
+docker compose config
+docker compose build
+docker compose up -d --wait --wait-timeout 180
+docker compose ps -a
 ```
 
 O Compose publica a API em `http://localhost:5080` e o Admin em
@@ -158,10 +179,12 @@ O Compose publica a API em `http://localhost:5080` e o Admin em
 API e Admin possuem health checks, e cada serviço aguarda a prontidão de sua
 dependência.
 
-No Compose, um serviço `migrator` executa as migrations reais e termina antes
-da API ser iniciada. Há uma única instância do migrator na composição, evitando
-corrida entre instâncias da API. Em execução local comum e no Aspire, o comando
-explícito `dotnet ef database update` continua disponível.
+No Compose, um serviço `migrator` executa as 18 migrations reais e termina com
+exit code `0` antes da API ser iniciada. Há uma única instância do migrator na
+composição, evitando corrida entre instâncias da API. Os containers finais de
+API e Admin executam com o `APP_UID` não privilegiado das imagens oficiais
+.NET. Em execução local comum e no Aspire, o comando explícito
+`dotnet ef database update` continua disponível.
 
 Ou execute o AppHost:
 
@@ -174,6 +197,9 @@ Admin resolve a API via service discovery. Fora de Development, sem service
 discovery, `PetMachApi__BaseUrl` é obrigatório.
 
 Nenhuma senha real deve ser gravada no repositório. `.env.example` contém somente um placeholder.
+
+O runbook completo, incluindo verificações e encerramento seguro, está em
+[docs/operations.md](docs/operations.md).
 
 ## Qualidade e testes
 
@@ -189,7 +215,17 @@ O script executa restore, format check, build, testes e cobertura. Individualmen
 & $dotnet test PetMach.slnx --no-build --collect:'XPlat Code Coverage'
 ```
 
-Testes de persistência com Testcontainers estão referenciados, mas sua execução será introduzida junto dos casos de uso que persistem dados e requer Docker disponível.
+Os testes `Category=PostgreSQL` iniciam PostgreSQL 18 automaticamente com
+Testcontainers e falham de forma explícita quando Docker não está disponível:
+
+```powershell
+& $dotnet test backend/tests/PetMach.Api.IntegrationTests/PetMach.Api.IntegrationTests.csproj --filter 'Category=PostgreSQL'
+```
+
+O resultado esperado atual é 5 testes aprovados, sem falhas ou ignorados. A
+fixture aplica as 18 migrations, limpa os dados entre casos e valida constraints
+concorrentes de reservas e adoção. Detalhes em
+[docs/testing.md](docs/testing.md).
 
 ## Variáveis principais
 
@@ -213,12 +249,12 @@ Testes de persistência com Testcontainers estão referenciados, mas sua execuç
 
 ## Roadmap
 
-1. Fases 1–2: fundação e identidade concluídas.
-2. Fase 3: tutores, cães, fotos e saúde.
-3. Fase 4: descoberta, likes, matches e bloqueios.
-4. Fase 5: chat e encontros com escopo funcional implementado; validação PostgreSQL pendente.
-5. Fase 6: parceiros, espaços e reservas (em andamento).
-6. Fase 7: adoção, moderação e administração.
-7. Fases 8–9: consolidação mobile, segurança, performance e release candidate.
+As fases 1–7 possuem implementação funcional no repositório. Os incrementos
+técnicos posteriores estabilizaram Testcontainers, sessão/navegação Mobile e a
+operação Docker de Admin/API/PostgreSQL.
 
-Consulte `docs/phase-1-report.md`, `docs/architecture.md` e `AGENTS.md`.
+Os próximos gates concentram-se em consolidação visual e acessibilidade Mobile,
+políticas definitivas de retenção/LGPD, validação iOS em macOS, segurança,
+performance, backup/restore e preparação do release candidate.
+
+Consulte `docs/execution-plan.md`, `docs/architecture.md` e `AGENTS.md`.

@@ -1,6 +1,6 @@
 # ADR-007 — Armazenamento protegido de imagens
 
-- Status: Proposta
+- Status: Aceita
 - Data: 2026-07-13
 
 ## Contexto

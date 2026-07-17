@@ -1,6 +1,6 @@
 # ADR-001 — Monólito modular
 
-- Status: Proposta
+- Status: Aceita
 - Data: 2026-07-13
 
 ## Contexto

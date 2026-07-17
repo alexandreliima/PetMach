@@ -1,6 +1,8 @@
 # Guia didático — Fase 2: Identity
 
-> Este documento complementa `docs/guia-do-projeto.md`. Deve ser incorporado ao guia principal quando o repositório PetMach estiver aberto como workspace editável.
+> Registro histórico do estado ao concluir a Fase 2. Para o estado atual,
+> consulte [Estado técnico atual](current-state.md) e
+> [Guia didático do PetMach](guia-do-projeto.md).
 
 ## Resultado da fase
 
@@ -188,4 +190,3 @@ Esses resultados foram conferidos no relatório e a presença da implementação
 2. Executar testes de persistência com Testcontainers quando Docker estiver disponível.
 3. Realizar aprovação funcional do fluxo de Identity.
 4. Iniciar a Fase 3: tutores, cães, fotos e saúde.
-

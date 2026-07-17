@@ -1,250 +1,206 @@
 # Guia didático do PetMach
 
-## Objetivo deste documento
+## Para que serve este guia
 
-Este guia explica o PetMach em linguagem simples: para que serve cada projeto, quem chama quem, onde ficam as regras, como o banco é acessado e o que está ou não implementado. Deve ser atualizado sempre que uma mudança alterar a estrutura, os fluxos, as responsabilidades ou o estado das funcionalidades.
+Este documento explica a arquitetura atual em linguagem direta. Para comandos,
+consulte [Operação e execução](operations.md); para detalhes verificáveis,
+consulte [Estado técnico atual](current-state.md).
 
-## Visão geral
+## O produto
+
+O PetMach conecta tutores e pets. Um tutor cria sua conta e os perfis dos
+animais, descobre outros pets, registra likes e forma matches recíprocos. A
+partir do match, os tutores podem conversar e combinar encontros.
+
+O produto também possui:
+
+- saúde e vacinação protegidas;
+- espaços de parceiros e reservas;
+- adoção responsável separada dos likes;
+- denúncias e moderação;
+- painel administrativo.
+
+## O caminho de uma operação
 
 ```text
-Aplicativo Mobile
-       │ requisição HTTP ou SignalR
+Mobile ou Admin
+       │ HTTP / SignalR
        ▼
       API
-       │ solicita um caso de uso
+       │ coordena
        ▼
   Application
-       │ utiliza as regras
+       │ aplica
        ▼
     Domain
-       │ leitura ou gravação de dados
-       ▼
+       ▲
+       │ implementa persistência e integrações
 Infrastructure
        │
        ▼
   PostgreSQL
 ```
 
-A resposta percorre o caminho inverso:
+- **Mobile** é a experiência do tutor.
+- **Admin** é a experiência de moderadores e administradores.
+- **API** autentica, autoriza e traduz HTTP para casos de uso.
+- **Application** define portas, validadores e operações.
+- **Domain** mantém invariantes que não dependem de tecnologia.
+- **Infrastructure** implementa EF Core, PostgreSQL, Identity, JWT e storage.
+- **Contracts** define requests e responses públicos.
+- **ServiceDefaults** configura saúde, telemetria, resiliência e descoberta.
+- **AppHost** inicia o ambiente de desenvolvimento pelo Aspire.
 
-```text
-PostgreSQL → Infrastructure → Application → API → Mobile
-```
-
-## Analogia com um restaurante
-
-- **Mobile** é o cliente fazendo o pedido.
-- **API** é o garçom que recebe e entrega o pedido.
-- **Application** é o gerente que coordena o atendimento.
-- **Domain** é o livro com as regras do restaurante.
-- **Infrastructure** é a cozinha e os equipamentos.
-- **PostgreSQL** é o estoque onde os dados ficam guardados.
-- **Contracts** são os formulários padronizados de pedidos e respostas.
-- **Admin** é o escritório administrativo.
-- **AppHost/Aspire** coordena a abertura dos componentes.
-- **ServiceDefaults** fornece configurações técnicas comuns.
-
-## Projetos e responsabilidades
-
-### `frontend/src/PetMach.Mobile`
-
-É o aplicativo instalado no celular. Deverá apresentar login, cadastro, cães, descoberta, matches, chat, reservas e as demais telas do MVP.
-
-O XAML define a aparência das telas. O comportamento principal deve ficar nos ViewModels.
-
-**Estado atual:** fundação MAUI com Shell, página inicial e injeção de dependência básica. Ainda não existe integração real com a API.
-
-### `frontend/src/PetMach.Mobile.Core`
-
-Contém a lógica das telas, principalmente ViewModels. Um ViewModel controla textos, botões e estados como carregando, sucesso, vazio e erro.
-
-```text
-MainPage.xaml
-      ↓ utiliza
-HomeViewModel
-```
-
-Separar o ViewModel permite testar o comportamento sem abrir o aplicativo.
-
-**Estado atual:** contém somente o `HomeViewModel` inicial.
+## Projetos
 
 ### `backend/src/PetMach.Api`
 
-É a porta de entrada do backend. Recebe requisições HTTP do Mobile, Admin ou outro cliente.
-
-```http
-POST /api/v1/auth/login
-GET  /api/v1/dogs
-POST /api/v1/reservations
-```
-
-O `Program.cs` configura controllers, autenticação, autorização, erros, OpenAPI, rate limiting, cache, SignalR e health checks. A API deve receber o pedido, identificar o usuário, chamar a Application e devolver uma resposta HTTP. Regras de negócio importantes não devem ficar aqui.
-
-**Estado atual:** infraestrutura HTTP preparada, endpoint básico de sistema e `ChatHub` vazio. Os endpoints do MVP ainda não existem.
-
-### `backend/src/PetMach.Contracts`
-
-Define os formatos dos dados que entram e saem da API, chamados de requests e responses.
-
-```json
-{
-  "email": "usuario@email.com",
-  "password": "senha"
-}
-```
-
-Isso impede que entidades internas e tabelas sejam expostas diretamente.
-
-**Estado atual:** contratos iniciais de Identity e resposta de informações do sistema.
-
-### `backend/src/PetMach.Application`
-
-Coordena casos de uso, como cadastrar usuário, autenticar, cadastrar cão, curtir perfil ou criar reserva.
-
-Um cadastro deverá aproximadamente:
-
-```text
-1. Receber os dados.
-2. Validar os campos.
-3. Verificar se o e-mail pode ser usado.
-4. Criar o usuário.
-5. Registrar consentimentos.
-6. Iniciar a confirmação de e-mail.
-7. Retornar sucesso ou erro controlado.
-```
-
-**Estado atual:** registro de validadores, validadores iniciais e interface `IIdentityService`. Ainda não existe a classe que realiza essas operações.
+Expõe os controllers em `/api/v1`, o hub `/hubs/chat`, OpenAPI em Development e
+os endpoints `/health/live` e `/health/ready`. A readiness inclui o acesso ao
+PostgreSQL.
 
 ### `backend/src/PetMach.Domain`
 
-É o núcleo das regras do negócio. Não deve depender de tela, HTTP, PostgreSQL ou Entity Framework Core.
+Contém regras de identidade, tutores, pets, saúde, descoberta, matches, chat,
+encontros, parceiros, reservas, adoção, notificações e moderação.
 
-Exemplos de regras:
+### `backend/src/PetMach.Application`
 
-- um tutor não pode curtir o próprio cão;
-- um match exige curtida recíproca e não pode ser duplicado;
-- uma reserva não pode conflitar com outra;
-- um usuário bloqueado não pode enviar mensagens;
-- adoção não participa do fluxo comum de likes.
+Contém interfaces dos serviços e validadores. Ela coordena os casos de uso sem
+conhecer controllers, páginas ou detalhes do EF Core.
 
-**Estado atual:** Result Pattern, erros básicos, catálogo de módulos e alguns tipos de Identity. A maior parte do domínio ainda não foi implementada.
+### `backend/src/PetMach.Contracts`
+
+Contém os contratos HTTP versionados. Entidades do domínio não são retornadas
+diretamente pela API.
 
 ### `backend/src/PetMach.Infrastructure`
 
-Implementa o contato com tecnologias externas:
-
-- PostgreSQL e Entity Framework Core;
-- ASP.NET Core Identity;
-- JWT;
-- futuros serviços de e-mail, imagens e push notifications.
-
-O `PetMachDbContext` mapeia classes C# para tabelas e executa operações no PostgreSQL.
-
-**Estado atual:** banco e Identity registrados, com migration inicial. O `DbContext` contém principalmente Identity. A autenticação JWT está registrada, mas ainda precisa de configuração e implementação completas.
+Contém `PetMachDbContext`, serviços dos módulos, ASP.NET Core Identity, emissão
+JWT e integrações. As 18 migrations EF Core também ficam nesse projeto.
 
 ### `backend/src/PetMach.Admin`
 
-Painel Blazor para consultar usuários e cães, analisar denúncias, suspender contas, administrar parceiros e acompanhar reservas.
-
-**Estado atual:** apenas a fundação Blazor, sem telas administrativas funcionais do MVP.
+É uma aplicação Blazor Interactive Server. Autentica pela API, exige papel
+administrativo, mantém cookie HTTP-only e permite operar a fila de moderação
+com antiforgery.
 
 ### `backend/src/PetMach.AppHost`
 
-Orquestra o ambiente com .NET Aspire:
+Declara PostgreSQL, API e Admin no .NET Aspire. Referências entre recursos
+fornecem connection string e service discovery no ambiente de desenvolvimento.
+
+### `frontend/src/PetMach.Mobile.Core`
+
+Contém ViewModels, clientes HTTP, sessão e abstrações de navegação. Por não
+depender da plataforma MAUI, pode ser testado em `net10.0`.
+
+### `frontend/src/PetMach.Mobile`
+
+Contém páginas XAML, integrações Android/iOS, `SecureStorage`, cliente SignalR e
+a implementação de navegação.
+
+## Exemplo: login e sessão
 
 ```text
-PostgreSQL
-    ↓
-   API
-    ↓
-  Admin
+1. LoginPage envia e-mail e senha pelo AuthApiClient.
+2. A API valida credenciais e estado da conta.
+3. A API devolve access token e refresh token.
+4. AuthenticationSession grava os tokens pelo ITokenStore.
+5. SecureTokenStore usa SecureStorage no dispositivo.
+6. RootNavigationService cria uma nova AppShell autenticada.
+7. Chamadas protegidas anexam o access token.
+8. Se uma chamada recebe 401, uma única renovação compartilhada é tentada.
+9. A requisição é repetida no máximo uma vez.
+10. Logout ou falha definitiva limpa a sessão, encerra conexões e cria uma nova raiz pública.
 ```
 
-Facilita iniciar os componentes juntos e acompanhar endpoints, logs, telemetria e saúde.
+Login e refresh usam um cliente separado das chamadas protegidas, portanto não
+entram em repetição recursiva.
 
-**Estado atual:** PostgreSQL, API e Admin declarados. A execução dos containers depende de Docker.
-
-### `backend/src/PetMach.ServiceDefaults`
-
-Centraliza configurações compartilhadas de health checks, OpenTelemetry, métricas, rastreamento, service discovery e resiliência HTTP.
-
-### Projetos de testes
-
-- `PetMach.Domain.Tests`: regras puras do domínio.
-- `PetMach.Application.Tests`: casos de uso e validações.
-- `PetMach.Api.IntegrationTests`: API e integrações.
-- `PetMach.Architecture.Tests`: direção das dependências.
-- `PetMach.Mobile.Tests`: ViewModels e lógica das telas.
-
-**Estado atual:** poucos testes de fundação. Os fluxos do MVP ainda não estão cobertos.
-
-## Quem pode chamar quem
+## Exemplo: match
 
 ```text
-API ───────────────┐
-                   ▼
-Infrastructure → Application → Domain
-                      │
-                      ▼
-                  Contracts
+1. O tutor escolhe um pet de origem.
+2. Mobile consulta candidatos autorizados na API.
+3. O tutor registra um like.
+4. A API valida ownership, estado e bloqueios.
+5. PostgreSQL grava o like com constraints de unicidade.
+6. Se houver like inverso, nasce um único match e uma conversa.
+7. Os dois tutores recebem notificações.
 ```
 
-Regras essenciais:
-
-- Domain não conhece API, banco ou Mobile.
-- Application não conhece telas MAUI.
-- Mobile e Admin não acessam PostgreSQL diretamente.
-- API não devolve entidades do banco diretamente.
-- Infrastructure implementa os detalhes técnicos necessários.
-- regras de negócio não ficam em controllers, páginas ou migrations.
-
-## Exemplo: futuro cadastro de usuário
+## Exemplo: reserva
 
 ```text
-1. Usuário preenche o cadastro no Mobile.
-2. Mobile envia POST /api/v1/auth/register.
-3. Endpoint recebe o RegisterRequest.
-4. FluentValidation verifica os campos.
-5. O caso de uso de Identity executa as regras.
-6. Infrastructure usa Identity e PetMachDbContext.
-7. Entity Framework Core grava no PostgreSQL.
-8. O caso de uso retorna sucesso ou erro conhecido.
-9. A API cria uma resposta HTTP padronizada.
-10. O Mobile apresenta o resultado ao usuário.
+1. O tutor escolhe pet, espaço e disponibilidade.
+2. A API valida ownership e período.
+3. A reserva começa pendente.
+4. O parceiro confirma ou cancela.
+5. Constraint PostgreSQL impede duas reservas ativas na mesma disponibilidade.
+6. O histórico preserva ator, estado e instante UTC.
 ```
 
-**Estado atual:** contratos, interface e parte das validações existem. Endpoint, implementação, tokens e persistência de consentimentos ainda faltam.
+Pagamento permanece presencial/informativo; não existe pagamento real no MVP.
 
-## Estado geral
+## Banco e migrations
 
-| Área | Estado atual |
+PostgreSQL é a fonte de verdade. O schema é produzido exclusivamente pelas 18
+migrations reais; não por `EnsureCreated` ou por um provider alternativo.
+
+No Docker Compose:
+
+```text
+PostgreSQL saudável
+        ↓
+Migrator aplica migrations e termina com exit code 0
+        ↓
+API inicia e fica saudável
+        ↓
+Admin inicia e fica saudável
+```
+
+Em execução local ou Aspire, as migrations são aplicadas explicitamente com
+`dotnet ef database update`.
+
+## Testes
+
+- domínio: invariantes puras;
+- aplicação: validações e DI;
+- arquitetura: dependências permitidas;
+- integração: endpoints, autenticação e persistência;
+- mobile: ViewModels, navegação, sessão, refresh e clientes.
+
+Os cinco testes PostgreSQL iniciam `postgres:18.0-alpine` automaticamente,
+aplicam as 18 migrations, isolam dados e validam concorrência. Sem Docker, a
+fixture falha explicitamente; não há falso verde.
+
+## Estado funcional
+
+| Área | Estado no repositório |
 |---|---|
-| Fundação da solução | Criada |
-| API e middleware básico | Preparados |
-| PostgreSQL e EF Core | Preparados para Identity |
-| Autenticação completa | Não implementada |
-| Tutor e cães | Não implementados |
-| Saúde e vacinação | Não implementadas |
-| Descoberta e filtros | Não implementados |
-| Likes e matches | Não implementados |
-| Chat | Hub vazio; fluxo não implementado |
-| Encontros | Não implementados |
-| Parceiros, espaços e reservas | Não implementados |
-| Adoção, notificações e moderação | Não implementadas |
-| Mobile | Apenas tela inicial |
-| Admin | Apenas fundação Blazor |
-| Testes do MVP | Não implementados |
+| Identidade e sessão | Implementadas |
+| Tutor, pets e saúde | Implementados |
+| Descoberta, likes e matches | Implementados |
+| Chat, leitura e encontros | Implementados |
+| Parceiros, espaços e reservas | Implementados |
+| Adoção e candidaturas | Implementadas |
+| Denúncias, moderação e Admin | Implementados |
+| Persistência PostgreSQL | 18 migrations e Testcontainers validados |
+| Docker Compose | PostgreSQL, migrator, API e Admin validados |
+| Mobile Android | Build e execução local suportados |
+| Mobile iOS | Projeto condicional; validação exige macOS |
 
-## Regra de manutenção
+“Implementado” não significa pronto para produção. Ainda são necessários
+políticas jurídicas definitivas, storage protegido de produção, backup/restore,
+validação iOS, segurança, performance, acessibilidade e preparação de release.
 
-Revisar este documento quando houver:
+## Onde continuar
 
-- criação, remoção ou renomeação de projeto ou componente importante;
-- mudança na direção das chamadas;
-- novo endpoint ou fluxo funcional;
-- nova tabela, entidade ou integração externa;
-- alteração no estado de uma funcionalidade da tabela acima;
-- decisão arquitetural que afete a compreensão do sistema.
-
-As explicações devem permanecer simples e tecnicamente verdadeiras. Um recurso apenas registrado ou esboçado nunca deve ser descrito como concluído.
-
+- [Estado técnico atual](current-state.md);
+- [Arquitetura](architecture.md);
+- [Diagramas](diagrams.md);
+- [Operação e execução](operations.md);
+- [Testes](testing.md);
+- [Perguntas em aberto](open-questions.md);
+- [Riscos](risks.md).

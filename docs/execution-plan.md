@@ -25,7 +25,7 @@
 - Cliente mobile de autenticação e armazenamento seguro.
 - Testes unitários, integração, autorização e reuse de refresh token.
 
-## Fase 3 — Tutores, cães e saúde (em andamento desde 2026-07-14)
+## Fase 3 — Tutores, cães e saúde (implementada)
 
 - Perfil do tutor, privacidade, cães, fotos, catálogo de raças e preferências.
 - Vacinas, vermifugação, comprovantes protegidos e indicador público derivado.
@@ -34,6 +34,9 @@
 
 ## Fase 4 — Descoberta, match e bloqueio
 
+Estado: escopo funcional implementado; persistência PostgreSQL coberta pelo
+incremento posterior de Testcontainers.
+
 - Consulta de candidatos, filtros e distância aproximada.
 - Like/pass, reciprocidade, match único, unmatch, bloqueio e notificação.
 - Telas MAUI de descoberta, filtros e matches.
@@ -41,7 +44,8 @@
 
 ## Fase 5 — Chat e encontros
 
-Estado: escopo funcional implementado em 2026-07-15; gate PostgreSQL/Testcontainers pendente.
+Estado: escopo funcional implementado em 2026-07-15; gate PostgreSQL concluído
+posteriormente pela fixture Testcontainers compartilhada.
 
 - Conversas, SignalR, texto, histórico paginado, leitura e autorização por participante.
 - Proposta e transições de encontros.
@@ -50,7 +54,8 @@ Estado: escopo funcional implementado em 2026-07-15; gate PostgreSQL/Testcontain
 
 ## Fase 6 — Parceiros, espaços e reservas
 
-Estado: concluída em 2026-07-16, incluindo migrations e concorrência validadas em PostgreSQL real. A automação por Testcontainers continua opcional enquanto o pipe do Docker Desktop não estiver acessível ao runner.
+Estado: concluída em 2026-07-16, incluindo migrations, concorrência e automação
+por Testcontainers em PostgreSQL real.
 
 - Parceiros, representantes, espaços, horários, disponibilidade e consultas.
 - Reserva, confirmação/cancelamento, `IPaymentGateway` fake/presencial e histórico.
@@ -68,11 +73,19 @@ Estado: escopo funcional implementado em 2026-07-16, com migrations e concorrên
 
 ## Fase 8 — Consolidação mobile
 
+Estado: navegação de raiz, restauração/invalidação de sessão, logout, refresh
+compartilhado e repetição HTTP única estabilizados. Consolidação visual,
+acessibilidade e estados das demais telas continuam no roadmap.
+
 - Completar as 30 telas, navegação Shell, estados loading/empty/error/success e acessibilidade.
 - Permissões just-in-time, geolocalização, mídia, caching e modo claro/escuro.
 - Testes de ViewModels, navegação e clientes; builds Android/iOS em ambientes compatíveis.
 
 ## Fase 9 — Qualidade e release candidate
+
+Estado: infraestrutura de persistência e Docker avançada. Compose com
+PostgreSQL, migrator, API e Admin, health checks e execução não privilegiada foi
+validado; gates de produção permanecem.
 
 - Revisão de segurança/LGPD, ameaça, performance e concorrência.
 - Testes completos, cobertura, migrations, backup/restore e observabilidade.

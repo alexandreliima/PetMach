@@ -21,11 +21,48 @@ flowchart TB
     Mobile["Mobile — .NET MAUI"] -->|"HTTPS + SignalR"| Api["API — ASP.NET Core"]
     Admin["Admin — Blazor Interactive Server"] --> Api
     Api --> Db[("PostgreSQL")]
+    Migrator["Migrator — EF Core"] --> Db
     Api --> Files["Object Storage"]
     Api --> Mail["E-mail"]
     Aspire["Aspire AppHost"] -. desenvolvimento .-> Api
     Aspire -. desenvolvimento .-> Admin
     Aspire -. desenvolvimento .-> Db
+```
+
+### Ordem de prontidão no Docker Compose
+
+```mermaid
+flowchart LR
+    Postgres["postgres:18-alpine<br/>pg_isready"] --> Migrator["migrator<br/>dotnet ef database update"]
+    Migrator -->|"exit code 0"| Api["api<br/>/health/ready"]
+    Api -->|"healthy"| Admin["admin<br/>/health/ready"]
+```
+
+### Sessão e raiz Mobile
+
+```mermaid
+stateDiagram-v2
+    [*] --> Publica: nova raiz pública
+    Publica --> Autenticada: login ou restauração válida
+    Autenticada --> Autenticada: refresh compartilhado
+    Autenticada --> Publica: logout
+    Autenticada --> Publica: sessão inválida
+    note right of Autenticada
+        Cada entrada cria nova AppShell
+        Requisição repete no máximo uma vez
+    end note
+```
+
+### Testes de persistência
+
+```mermaid
+flowchart LR
+    Xunit["Coleção xUnit"] --> Fixture["PostgreSqlFixture"]
+    Fixture --> Container["postgres:18.0-alpine"]
+    Fixture --> Migrations["18 migrations EF Core"]
+    Migrations --> Container
+    Tests["5 testes PostgreSQL"] --> Container
+    Tests --> Reset["TRUNCATE + preserve __EFMigrationsHistory"]
 ```
 
 ## 3. Componentes do backend

@@ -2,11 +2,13 @@
 
 As respostas não são necessárias para aprovar toda a Fase 0, salvo quando marcadas como bloqueadoras para a fase indicada.
 
-## Decisões confirmadas em 2026-07-13
+## Decisões de ambiente
 
 - O produto, a solução e os namespaces usarão o nome **PetMach**.
 - CI remota não será configurada por enquanto; gates equivalentes serão executados localmente.
-- Docker não está disponível por enquanto. Testcontainers, PostgreSQL orquestrado e a experiência completa do Aspire ficarão pendentes até existir runtime compatível.
+- Docker Desktop está disponível no ambiente atual. PostgreSQL em Compose,
+  migrator, API e Admin foram validados; os testes de persistência executam
+  automaticamente por Testcontainers.
 - Não há Mac build host por enquanto. Android será a primeira plataforma validada localmente; iOS continuará no projeto, mas seu build será validado futuramente.
 
 ## Antes da Fase 2 — Identidade
