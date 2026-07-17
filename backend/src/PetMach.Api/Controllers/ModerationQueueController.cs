@@ -28,5 +28,19 @@ public sealed class ModerationQueueController(IReportService reports) : Controll
         Result<ProtectedEvidenceFile> result = await reports.GetEvidenceAsync(evidenceId, cancellationToken);
         return result.IsSuccess ? File(result.Value.Content, result.Value.ContentType) : NotFound();
     }
+
+    [HttpGet("reports/{reportId:guid}/evidence")]
+    public async Task<IActionResult> ListEvidence(Guid reportId, CancellationToken cancellationToken)
+    {
+        Result<IReadOnlyCollection<ReportEvidenceResponse>> result = await reports.ListEvidenceAsync(reportId, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
+    }
+
+    [HttpPost("reports/{reportId:guid}/actions")]
+    public async Task<IActionResult> ApplyAction(Guid reportId, ApplyModerationActionRequest request, CancellationToken cancellationToken)
+    {
+        Result<ModerationActionResponse> result = await reports.ApplyActionAsync(UserId(), reportId, request, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : StatusCode(result.Error.Code.EndsWith("not_found", StringComparison.Ordinal) ? 404 : 409, new ProblemDetails { Title = result.Error.Description });
+    }
     private Guid UserId() => Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub"), out Guid id) ? id : Guid.Empty;
 }

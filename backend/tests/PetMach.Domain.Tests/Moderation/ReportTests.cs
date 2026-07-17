@@ -32,4 +32,16 @@ public sealed class ReportTests
         Action create = () => _ = new ReportEvidence(Guid.NewGuid(), string.Empty, "image/jpeg", 100, Now);
         create.Should().Throw<ArgumentException>();
     }
+
+    [Fact]
+    public void ReviewedReportShouldBecomeActioned()
+    {
+        Report report = new(Guid.NewGuid(), ReportTargetType.User, Guid.NewGuid(), ReportReason.Fraud, "Indícios verificáveis.", Now);
+        Guid moderatorId = Guid.NewGuid();
+        report.StartReview(moderatorId, Now.AddMinutes(1));
+        report.MarkActioned(moderatorId, Now.AddMinutes(2));
+        report.Status.Should().Be(ReportStatus.Actioned);
+        ModerationAction action = new(report.Id, moderatorId, ModerationActionType.SuspendUser, report.TargetType, report.TargetId, Now.AddMinutes(2));
+        action.TargetId.Should().Be(report.TargetId);
+    }
 }

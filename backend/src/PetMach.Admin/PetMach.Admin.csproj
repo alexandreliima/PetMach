@@ -4,6 +4,7 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PetMach.Contracts\PetMach.Contracts.csproj" />
     <ProjectReference Include="..\PetMach.ServiceDefaults\PetMach.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>

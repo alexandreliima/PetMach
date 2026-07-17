@@ -40,7 +40,7 @@ public sealed partial class RegisterViewModel(IAuthApiClient api, IMobileNavigat
             StatusMessage = result.RequiresEmailConfirmation
                 ? "Conta criada. Confira a confirmação capturada no ambiente de desenvolvimento."
                 : "Conta criada com sucesso.";
-            await navigator.GoToAsync("login");
+            await navigator.GoToAsync($"login?email={Uri.EscapeDataString(input.Email)}&registered={result.RequiresEmailConfirmation.ToString().ToLowerInvariant()}");
         }
         catch (HttpRequestException)
         {

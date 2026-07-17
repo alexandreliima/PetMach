@@ -1,9 +1,44 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="PetMach.Mobile.MatchesPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Matches" BackgroundColor="{StaticResource Surface}">
-    <Grid Padding="24" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="14">
-        <Label FontAttributes="Bold" FontSize="30" Text="Seus matches" />
+<ContentPage x:Class="PetMach.Mobile.MatchesPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Matches"
+             BackgroundColor="{StaticResource Surface}">
+    <Grid Padding="20,16" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="14">
+        <VerticalStackLayout Spacing="2">
+            <Label FontAttributes="Bold" FontSize="30" Text="Seus matches" />
+            <Label Text="Converse e combine um encontro seguro entre os cães." TextColor="#6B5E56" />
+        </VerticalStackLayout>
         <CollectionView Grid.Row="1" ItemsSource="{Binding Matches}" EmptyView="Nenhum match por enquanto.">
-            <CollectionView.ItemTemplate><DataTemplate><Border Margin="0,0,0,12" BackgroundColor="White" Padding="18" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18"><Grid ColumnDefinitions="*,Auto"><VerticalStackLayout><Label FontAttributes="Bold" FontSize="20" Text="{Binding OtherDogName}" /><Label Text="{Binding OtherDogBreed}" TextColor="#6B5E56" /></VerticalStackLayout><Button Grid.Column="1" BackgroundColor="Transparent" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EndCommand}" CommandParameter="{Binding .}" Text="Desfazer" TextColor="#9A3A2A" /></Grid></Border></DataTemplate></CollectionView.ItemTemplate>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="0,0,0,12"
+                            BackgroundColor="White"
+                            Padding="18"
+                            Stroke="#E7D8CD"
+                            StrokeShape="RoundRectangle 18">
+                        <VerticalStackLayout Spacing="10">
+                            <Label FontAttributes="Bold" FontSize="22" Text="{Binding OtherDogName}" />
+                            <Label Text="{Binding OtherDogBreed}" TextColor="#6B5E56" />
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                <Button Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenConversationCommand}"
+                                        Text="Conversar" />
+                                <Button Grid.Column="1"
+                                        BackgroundColor="{StaticResource Primary}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ProposeMeetingCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="Marcar encontro" />
+                            </Grid>
+                            <Button BackgroundColor="Transparent"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EndCommand}"
+                                    CommandParameter="{Binding .}"
+                                    FontSize="12"
+                                    Text="Desfazer match"
+                                    TextColor="#9A3A2A" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
         </CollectionView>
         <ActivityIndicator Grid.Row="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
         <Label Grid.Row="3" HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="#7A3323" />

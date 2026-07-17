@@ -48,6 +48,7 @@ public sealed class Dog
     }
 
     public void Activate() { if (Status == DogProfileStatus.Draft || Status == DogProfileStatus.Hidden) Status = DogProfileStatus.Active; }
+    public void Suspend(DateTimeOffset now) { if (Status == DogProfileStatus.Removed) throw new InvalidOperationException("Cão removido não pode ser suspenso."); Status = DogProfileStatus.Suspended; UpdatedAtUtc = now.ToUniversalTime(); }
     public void Remove() => Status = DogProfileStatus.Removed;
     private static bool ScoreValid(int value) => value is >= 1 and <= 5;
     private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();

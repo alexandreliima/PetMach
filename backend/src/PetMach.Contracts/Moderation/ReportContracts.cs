@@ -5,3 +5,6 @@ public enum ReportReasonContract { Harassment, Fraud, UnsafeContent, AnimalWelfa
 public sealed record CreateReportRequest(ReportTargetTypeContract TargetType, Guid TargetId, ReportReasonContract Reason, string Description);
 public sealed record ReportResponse(Guid Id, string TargetType, Guid TargetId, string Reason, string Description, string Status, DateTimeOffset CreatedAtUtc, int EvidenceCount);
 public sealed record ReportEvidenceResponse(Guid Id, string ContentType, long Length, DateTimeOffset CreatedAtUtc);
+public enum ModerationActionTypeContract { SuspendUser, SuspendDog, SuspendAdoptionProfile }
+public sealed record ApplyModerationActionRequest(ModerationActionTypeContract Action);
+public sealed record ModerationActionResponse(Guid Id, Guid ReportId, string Action, string TargetType, Guid TargetId, DateTimeOffset OccurredAtUtc);

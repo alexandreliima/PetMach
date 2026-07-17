@@ -7,11 +7,11 @@ namespace PetMach.Mobile.Core.Features;
 public sealed partial class DiscoveryViewModel(IPetMachApiClient api) : ObservableObject
 {
     public ObservableCollection<DogModel> MyDogs { get; } = [];
-    private readonly Queue<DiscoveryDogModel> candidates = new();
+    public ObservableCollection<DiscoveryDogModel> Candidates { get; } = [];
     private int currentPage;
     private bool hasMore;
+
     [ObservableProperty] private DogModel? selectedDog;
-    [ObservableProperty] private DiscoveryDogModel? currentDog;
     [ObservableProperty] private bool isBusy;
     [ObservableProperty] private string statusMessage = string.Empty;
     [ObservableProperty] private string breedFilter = string.Empty;
@@ -21,6 +21,7 @@ public sealed partial class DiscoveryViewModel(IPetMachApiClient api) : Observab
     [ObservableProperty] private DogGoalModel? goalFilter;
     [ObservableProperty] private bool onlyNeutered;
     [ObservableProperty] private bool onlyVaccinated;
+    [ObservableProperty] private bool showFilters;
 
     public IReadOnlyList<DogSexModel> SexOptions { get; } = Enum.GetValues<DogSexModel>();
     public IReadOnlyList<DogSizeModel> SizeOptions { get; } = Enum.GetValues<DogSizeModel>();
@@ -28,29 +29,57 @@ public sealed partial class DiscoveryViewModel(IPetMachApiClient api) : Observab
     public IReadOnlyList<DogGoalModel> GoalOptions { get; } = Enum.GetValues<DogGoalModel>();
 
     [RelayCommand]
+    private void ToggleFilters() => ShowFilters = !ShowFilters;
+
+    [RelayCommand]
     private async Task LoadAsync()
     {
         if (IsBusy) return;
+
         try
         {
             IsBusy = true;
             MyDogs.Clear();
-            foreach (DogModel dog in await api.GetDogsAsync(CancellationToken.None)) MyDogs.Add(dog);
+            foreach (DogModel dog in await api.GetDogsAsync(CancellationToken.None))
+            {
+                MyDogs.Add(dog);
+            }
+
             SelectedDog ??= MyDogs.FirstOrDefault();
             await ReloadCandidatesAsync();
         }
-        catch (AuthenticationRequiredException ex) { StatusMessage = ex.Message; }
-        catch (HttpRequestException) { StatusMessage = "Não foi possível carregar a descoberta."; }
-        finally { IsBusy = false; }
+        catch (AuthenticationRequiredException ex)
+        {
+            StatusMessage = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            StatusMessage = "Não foi possível carregar a rede.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
     private async Task RefreshAsync()
     {
         if (SelectedDog is null || IsBusy) return;
-        try { IsBusy = true; await ReloadCandidatesAsync(); }
-        catch (HttpRequestException) { StatusMessage = "Não foi possível atualizar a descoberta."; }
-        finally { IsBusy = false; }
+
+        try
+        {
+            IsBusy = true;
+            await ReloadCandidatesAsync();
+        }
+        catch (HttpRequestException)
+        {
+            StatusMessage = "Não foi possível atualizar a rede.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
@@ -70,91 +99,126 @@ public sealed partial class DiscoveryViewModel(IPetMachApiClient api) : Observab
     private async Task LoadMoreAsync()
     {
         if (SelectedDog is null || IsBusy || !hasMore) return;
+
         try
         {
             IsBusy = true;
             await LoadPageAsync(currentPage + 1);
-            if (CurrentDog is null) ShowNext();
         }
-        catch (HttpRequestException) { StatusMessage = "Não foi possível carregar mais perfis."; }
-        finally { IsBusy = false; }
+        catch (HttpRequestException)
+        {
+            StatusMessage = "Não foi possível carregar mais perfis.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
-    private async Task LikeAsync()
+    private async Task LikeAsync(DiscoveryDogModel dog)
     {
-        if (SelectedDog is null || CurrentDog is null || IsBusy) return;
+        if (SelectedDog is null || IsBusy) return;
+
         try
         {
             IsBusy = true;
-            LikeDogModel result = await api.LikeAsync(SelectedDog.Id, CurrentDog.DogId, CancellationToken.None);
-            StatusMessage = result.MatchCreated ? "É um match! Vocês curtiram um ao outro." : "Curtida enviada.";
-            ShowNext();
+            LikeDogModel result = await api.LikeAsync(SelectedDog.Id, dog.DogId, CancellationToken.None);
+            StatusMessage = result.MatchCreated
+                ? "É um match! Agora vocês podem conversar e combinar um encontro."
+                : "Curtida enviada.";
+            Candidates.Remove(dog);
         }
-        catch (HttpRequestException) { StatusMessage = "Não foi possível enviar a curtida."; }
-        finally { IsBusy = false; }
+        catch (HttpRequestException)
+        {
+            StatusMessage = "Não foi possível enviar a curtida.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
-    private async Task PassAsync()
+    private async Task PassAsync(DiscoveryDogModel dog)
     {
-        if (SelectedDog is null || CurrentDog is null || IsBusy) return;
+        if (SelectedDog is null || IsBusy) return;
+
         try
         {
             IsBusy = true;
-            await api.PassAsync(SelectedDog.Id, CurrentDog.DogId, CancellationToken.None);
+            await api.PassAsync(SelectedDog.Id, dog.DogId, CancellationToken.None);
+            Candidates.Remove(dog);
             StatusMessage = "Perfil ignorado.";
-            ShowNext();
         }
-        catch (HttpRequestException) { StatusMessage = "Não foi possível ignorar o perfil."; }
-        finally { IsBusy = false; }
+        catch (HttpRequestException)
+        {
+            StatusMessage = "Não foi possível ignorar o perfil.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
-    private async Task BlockAsync()
+    private async Task BlockAsync(DiscoveryDogModel dog)
     {
-        if (CurrentDog is null || IsBusy) return;
+        if (IsBusy) return;
+
         try
         {
             IsBusy = true;
-            await api.BlockDogOwnerAsync(CurrentDog.DogId, CancellationToken.None);
+            await api.BlockDogOwnerAsync(dog.DogId, CancellationToken.None);
+            Candidates.Remove(dog);
             StatusMessage = "Tutor bloqueado. Os perfis foram ocultados.";
-            ShowNext();
         }
-        catch (HttpRequestException) { StatusMessage = "Não foi possível bloquear este tutor."; }
-        finally { IsBusy = false; }
+        catch (HttpRequestException)
+        {
+            StatusMessage = "Não foi possível bloquear este tutor.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async Task ReloadCandidatesAsync()
     {
-        candidates.Clear();
-        CurrentDog = null;
+        Candidates.Clear();
         if (SelectedDog is null)
         {
-            StatusMessage = "Cadastre um cão para começar a descoberta.";
+            StatusMessage = "Cadastre um cão para começar a explorar a rede.";
             return;
         }
+
+        StatusMessage = string.Empty;
         await LoadPageAsync(1);
-        ShowNext();
+        if (Candidates.Count == 0)
+        {
+            StatusMessage = "Não há perfis com esses critérios por enquanto.";
+        }
     }
 
     private async Task LoadPageAsync(int pageNumber)
     {
         DiscoveryFilterModel filter = new(
-            SexFilter, SizeFilter, Clean(BreedFilter), EnergyLevelFilter, GoalFilter,
-            OnlyNeutered ? true : null, OnlyVaccinated ? true : null, pageNumber);
+            SexFilter,
+            SizeFilter,
+            Clean(BreedFilter),
+            EnergyLevelFilter,
+            GoalFilter,
+            OnlyNeutered ? true : null,
+            OnlyVaccinated ? true : null,
+            pageNumber);
         DiscoveryPageModel page = await api.DiscoverAsync(SelectedDog!.Id, filter, CancellationToken.None);
-        foreach (DiscoveryDogModel dog in page.Items) candidates.Enqueue(dog);
+        foreach (DiscoveryDogModel dog in page.Items)
+        {
+            Candidates.Add(dog);
+        }
+
         currentPage = page.Page;
         hasMore = page.HasMore;
-    }
-
-    private void ShowNext()
-    {
-        CurrentDog = candidates.TryDequeue(out DiscoveryDogModel? dog) ? dog : null;
-        if (CurrentDog is null) StatusMessage = hasMore
-            ? "Há mais perfis disponíveis. Carregue a próxima página."
-            : "Não há mais perfis com esses critérios por enquanto.";
     }
 
     private static string? Clean(string value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();

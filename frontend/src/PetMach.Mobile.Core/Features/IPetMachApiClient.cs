@@ -36,10 +36,19 @@ public interface IPetMachApiClient
     Task<SpaceAvailabilityModel> CreateSpaceAvailabilityAsync(Guid spaceId, DateTimeOffset startsAtUtc, DateTimeOffset endsAtUtc, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<ReservationModel>> GetPartnerReservationsAsync(CancellationToken cancellationToken);
     Task<ReservationModel> TransitionPartnerReservationAsync(Guid reservationId, string transition, bool paymentReceivedOnSite, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<AdoptionProfileModel>> GetAdoptionProfilesAsync(CancellationToken cancellationToken);
+    Task<AdoptionProfileModel> CreateAdoptionProfileAsync(Guid dogId, string story, string requirements, CancellationToken cancellationToken);
+    Task SuspendAdoptionProfileAsync(Guid profileId, CancellationToken cancellationToken);
+    Task<AdoptionApplicationModel> ApplyForAdoptionAsync(Guid profileId, string motivation, string experience, string housingContext, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<AdoptionApplicationModel>> GetMyAdoptionApplicationsAsync(CancellationToken cancellationToken);
+    Task<AdoptionApplicationModel> TransitionAdoptionApplicationAsync(Guid applicationId, string transition, CancellationToken cancellationToken);
+    Task<ReportModel> ReportAdoptionProfileAsync(Guid profileId, string reason, string description, CancellationToken cancellationToken);
+    Task<ReportEvidenceModel> UploadReportEvidenceAsync(Guid reportId, PickedFile file, CancellationToken cancellationToken);
 }
 
 public interface IDeviceFilePicker
 {
     Task<PickedFile?> PickPhotoAsync(CancellationToken cancellationToken);
     Task<PickedFile?> PickHealthProofAsync(CancellationToken cancellationToken);
+    Task<PickedFile?> PickReportEvidenceAsync(CancellationToken cancellationToken);
 }

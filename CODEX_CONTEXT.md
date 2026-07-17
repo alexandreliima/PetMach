@@ -339,17 +339,86 @@ O primeiro e o segundo incrementos da Fase 7 também foram entregues:
 - a constraint de aprovação única foi validada com transações concorrentes em PostgreSQL real, retornando `23505` para a disputa perdedora;
 - migration `Phase7AdoptionProfiles` e migration das candidaturas foram materializadas e aplicadas.
 
-Validação final reportada:
+Terceiro incremento da Fase 7 — denúncias e fila de moderação:
+
+- denúncias podem apontar para usuário, cão, publicação de adoção ou mensagem;
+- motivos são controlados por allowlist e não é permitido denunciar conteúdo próprio;
+- constraint parcial única impede denúncia ativa duplicada para o mesmo denunciante e alvo;
+- evidências aceitam somente JPEG, PNG ou PDF cujo tipo real seja validado;
+- cada arquivo possui limite de 5 MB e cada denúncia aceita no máximo cinco evidências;
+- arquivos recebem nomes gerados, ficam em armazenamento não público e o download é exclusivo da moderação;
+- a fila é protegida por `AdministrationAccess` e permite transições para revisão e arquivamento;
+- migration `Phase7ModerationReports` aplicada no PostgreSQL real;
+- documentação e testes de autorização, armazenamento e concorrência foram atualizados.
+
+Quarto incremento da Fase 7 — ações administrativas auditadas:
+
+- moderação pode suspender usuário, cão ou publicação de adoção;
+- a ação precisa ser compatível com o tipo do alvo e exige denúncia previamente em revisão;
+- suspensão de usuário revoga sessões e reutiliza a auditoria de identidade;
+- constraint garante uma única ação administrativa por denúncia;
+- auditoria registra moderador, ação, alvo e instante UTC, sem justificativa ou evidência sensível;
+- após a execução bem-sucedida, a denúncia passa para `Actioned`;
+- migration `Phase7ModerationActions` aplicada no PostgreSQL real.
+
+Quinto incremento da Fase 7 — adoção e denúncias no mobile:
+
+- catálogo de publicações de adoção e publicação de cão próprio;
+- aceite explícito do termo de adoção;
+- candidatura com motivação, experiência e contexto do lar;
+- acompanhamento e retirada de candidatura;
+- suspensão da própria publicação;
+- denúncia de publicação com motivo controlado;
+- nova tela acessível pela home;
+- regras visuais derivadas exclusivamente dos estados retornados pelo servidor.
+
+Validação reportada para o quinto incremento: formatação, build integral e Android aprovados, com 136 testes aprovados, incluindo PostgreSQL real. Nenhum erro; permaneceram somente avisos `NU1900`.
+
+Sexto incremento da Fase 7 — dashboard administrativo de moderação:
+
+- login administrativo conectado à API e restrito aos papéis `Administrator` ou `Moderator`;
+- sessão em cookie HTTP-only, `SameSite=Strict`, com expiração alinhada ao access token;
+- JWT armazenado no cookie criptografado, sem exposição ao JavaScript;
+- fila apresenta descrição, estado e evidências protegidas;
+- moderação pode iniciar revisão, arquivar e aplicar suspensão compatível com usuário, cão ou publicação;
+- todas as mutações são protegidas por antiforgery;
+- evidências são acessadas por proxy autenticado, sem exposição da storage key.
+
+Validação mais recente reportada:
 
 - formatação aprovada;
 - build integral aprovado;
-- 123 testes aprovados, incluindo PostgreSQL real;
+- 137 testes aprovados, incluindo PostgreSQL real;
 - nenhum erro;
 - permanecem somente avisos `NU1900` porque a auditoria NuGet está offline.
 
+Sétimo incremento e encerramento funcional da Fase 7 — evidências mobile e revisão de segurança:
+
+- seleção opcional de evidência por seletor específico no mobile;
+- upload de JPEG, PNG ou PDF;
+- limite real de 5 MB, com margem separada para o overhead multipart HTTP;
+- tipo detectado pela assinatura real do arquivo, sem confiar no tipo declarado pelo dispositivo;
+- evidência vinculada automaticamente à denúncia criada;
+- revisão final de segurança documentada.
+
+Validação de encerramento reportada:
+
+- formatação aprovada;
+- build integral e Android aprovados;
+- 137 testes aprovados, incluindo PostgreSQL real;
+- nenhum erro;
+- permanecem somente avisos `NU1900` porque a auditoria NuGet está offline.
+
+A Fase 7 está funcionalmente concluída. Permanecem como bloqueadores explícitos para produção:
+
+- política jurídica de retenção e eliminação de denúncias e evidências;
+- object storage protegido, criptografado, com backup e auditoria de acesso;
+- matriz definitiva de permissões administrativas;
+- key ring persistente e protegido para os cookies do Admin.
+
 ## Próxima etapa recomendada
 
-Avançar na Fase 7 com denúncias, evidências protegidas e fila de moderação. Garantir acesso restrito às evidências, estados explícitos, ownership, bloqueios, trilha auditável das decisões administrativas e ausência de dados sensíveis nas respostas públicas e nos logs.
+Iniciar a Fase 8 com consolidação da experiência mobile, acessibilidade e estados consistentes de loading, vazio, erro e sucesso. Preservar os bloqueadores de produção da Fase 7 como pendências explícitas, sem tratá-los como concluídos.
 
 ## Regras para retomada
 

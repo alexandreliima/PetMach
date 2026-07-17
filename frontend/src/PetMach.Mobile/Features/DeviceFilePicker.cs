@@ -19,6 +19,12 @@ public sealed class DeviceFilePicker : IDeviceFilePicker
         return result is null ? null : await ReadAsync(result, true, cancellationToken);
     }
 
+    public async Task<PickedFile?> PickReportEvidenceAsync(CancellationToken cancellationToken)
+    {
+        FileResult? result = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = "Escolha uma evidência" });
+        return result is null ? null : await ReadAsync(result, true, cancellationToken);
+    }
+
     private static async Task<PickedFile> ReadAsync(FileResult result, bool allowPdf, CancellationToken cancellationToken)
     {
         string extension = Path.GetExtension(result.FileName).ToLowerInvariant();

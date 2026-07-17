@@ -3,19 +3,143 @@
     x:Class="PetMach.Mobile.LoginPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark=#201C1A}"
+    Shell.NavBarIsVisible="False"
     Title="Entrar">
     <ScrollView>
-        <VerticalStackLayout Padding="28,40" Spacing="18">
-            <Label FontAttributes="Bold" FontSize="34" Text="Que bom ter você de volta" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark=White}" />
-            <Label Text="Entre para cuidar dos seus cães e conexões." TextColor="{AppThemeBinding Light=#6B5E56, Dark=#D7C9C0}" />
+        <VerticalStackLayout Padding="30,54,30,30" Spacing="14">
+            <Image
+                HeightRequest="72"
+                HorizontalOptions="Center"
+                Source="petmatch_logo.svg"
+                WidthRequest="72" />
+            <Label
+                FontAttributes="Bold"
+                FontSize="36"
+                HorizontalTextAlignment="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Pet" TextColor="{StaticResource TextPrimary}" />
+                        <Span Text="Match" TextColor="{StaticResource Primary}" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Label
+                FontSize="16"
+                HorizontalTextAlignment="Center"
+                Margin="0,-8,0,14"
+                Text="Faça login para continuar"
+                TextColor="{StaticResource TextSecondary}" />
+
             <Label FontAttributes="Bold" Text="E-mail" />
-            <Entry Keyboard="Email" Placeholder="voce@exemplo.com" Text="{Binding Email}" />
-            <Label FontAttributes="Bold" Text="Senha" />
-            <Entry IsPassword="True" Placeholder="Sua senha" Text="{Binding Password}" />
-            <Label Text="{Binding StatusMessage}" TextColor="{StaticResource Primary}" />
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-            <Button Command="{Binding LoginCommand}" CornerRadius="18" HeightRequest="56" Text="Entrar" />
+            <Border BackgroundColor="#FFFCF9" Padding="13,0" StrokeShape="RoundRectangle 12">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <Label FontSize="18" Text="✉" TextColor="#9D9D99" VerticalTextAlignment="Center" />
+                    <Entry
+                        Grid.Column="1"
+                        BackgroundColor="Transparent"
+                        Keyboard="Email"
+                        Placeholder="seu@email.com"
+                        Text="{Binding Email}" />
+                </Grid>
+            </Border>
+
+            <Label FontAttributes="Bold" Margin="0,6,0,0" Text="Senha" />
+            <Border BackgroundColor="#FFFCF9" Padding="13,0" StrokeShape="RoundRectangle 12">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <Label FontSize="18" Text="▣" TextColor="#9D9D99" VerticalTextAlignment="Center" />
+                    <Entry
+                        Grid.Column="1"
+                        BackgroundColor="Transparent"
+                        IsPassword="True"
+                        Placeholder="••••••••"
+                        Text="{Binding Password}" />
+                </Grid>
+            </Border>
+
+            <Button
+                BackgroundColor="Transparent"
+                FontAttributes="None"
+                HeightRequest="38"
+                HorizontalOptions="End"
+                Padding="0"
+                Text="Esqueci minha senha"
+                TextColor="{StaticResource Teal}" />
+
+            <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="{StaticResource Danger}" />
+            <ActivityIndicator Color="{StaticResource Primary}" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <Button Command="{Binding LoginCommand}" Text="Entrar" />
+
+            <Grid Margin="0,8" ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                <BoxView HeightRequest="1" VerticalOptions="Center" Color="{StaticResource Border}" />
+                <Label Grid.Column="1" Text="ou" TextColor="{StaticResource TextSecondary}" />
+                <BoxView Grid.Column="2" HeightRequest="1" VerticalOptions="Center" Color="{StaticResource Border}" />
+            </Grid>
+
+            <Button
+                Style="{StaticResource OutlineButton}"
+                Clicked="OpenRegistrationClicked"
+                Text="Criar conta" />
+
+            <Label
+                FontSize="13"
+                HorizontalTextAlignment="Center"
+                Margin="0,4,0,0"
+                Text="Entrar com"
+                TextColor="{StaticResource TextSecondary}" />
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto,*" ColumnSpacing="18">
+                <Border
+                    Grid.Column="1"
+                    BackgroundColor="White"
+                    HeightRequest="52"
+                    Padding="0"
+                    StrokeShape="RoundRectangle 26"
+                    WidthRequest="52">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="22"
+                        HorizontalTextAlignment="Center"
+                        Text="G"
+                        TextColor="#4285F4"
+                        VerticalTextAlignment="Center" />
+                </Border>
+                <Border
+                    Grid.Column="2"
+                    BackgroundColor="White"
+                    HeightRequest="52"
+                    Padding="0"
+                    StrokeShape="RoundRectangle 26"
+                    WidthRequest="52">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        HorizontalTextAlignment="Center"
+                        Text="f"
+                        TextColor="#1877F2"
+                        VerticalTextAlignment="Center" />
+                </Border>
+                <Border
+                    Grid.Column="3"
+                    BackgroundColor="White"
+                    HeightRequest="52"
+                    Padding="0"
+                    StrokeShape="RoundRectangle 26"
+                    WidthRequest="52">
+                    <Label
+                        FontSize="22"
+                        HorizontalTextAlignment="Center"
+                        Text="●"
+                        TextColor="#111111"
+                        VerticalTextAlignment="Center" />
+                </Border>
+            </Grid>
+
+            <Label
+                FontSize="12"
+                HorizontalTextAlignment="Center"
+                LineHeight="1.2"
+                Margin="12,14,12,0"
+                Text="Ao continuar, você concorda com nossos Termos de Uso e Política de Privacidade."
+                TextColor="{StaticResource TextSecondary}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

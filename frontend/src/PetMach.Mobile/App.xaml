@@ -5,9 +5,79 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="Primary">#C84C31</Color>
-            <Color x:Key="Surface">#FFF8F1</Color>
-            <Color x:Key="TextPrimary">#292522</Color>
+            <Color x:Key="Primary">#F45B43</Color>
+            <Color x:Key="PrimaryDark">#D94734</Color>
+            <Color x:Key="Surface">#FFF9F3</Color>
+            <Color x:Key="SurfaceCard">#FFFFFF</Color>
+            <Color x:Key="SurfaceMuted">#F7EEE7</Color>
+            <Color x:Key="TextPrimary">#123C38</Color>
+            <Color x:Key="TextSecondary">#6D716F</Color>
+            <Color x:Key="Border">#E9DDD4</Color>
+            <Color x:Key="Teal">#2D8B7D</Color>
+            <Color x:Key="Mint">#DFF1EB</Color>
+            <Color x:Key="Amber">#F3B94F</Color>
+            <Color x:Key="Danger">#D94734</Color>
+
+            <Style TargetType="ContentPage">
+                <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
+            </Style>
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+            <Style x:Key="PageTitle" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="30" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+            <Style x:Key="SectionTitle" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+            <Style x:Key="Caption" TargetType="Label">
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="24" />
+                <Setter Property="HeightRequest" Value="52" />
+                <Setter Property="Padding" Value="20,10" />
+            </Style>
+            <Style x:Key="OutlineButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="TextColor" Value="{StaticResource Primary}" />
+            </Style>
+            <Style x:Key="GhostButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="TextColor" Value="{StaticResource Teal}" />
+                <Setter Property="HeightRequest" Value="44" />
+            </Style>
+            <Style TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="#FFFCF9" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="PlaceholderColor" Value="#9D9D99" />
+                <Setter Property="HeightRequest" Value="54" />
+            </Style>
+            <Style TargetType="Editor">
+                <Setter Property="BackgroundColor" Value="#FFFCF9" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="PlaceholderColor" Value="#9D9D99" />
+            </Style>
+            <Style TargetType="Picker">
+                <Setter Property="BackgroundColor" Value="#FFFCF9" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="TitleColor" Value="#9D9D99" />
+                <Setter Property="HeightRequest" Value="54" />
+            </Style>
+            <Style TargetType="Border">
+                <Setter Property="Stroke" Value="{StaticResource Border}" />
+                <Setter Property="StrokeThickness" Value="1" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

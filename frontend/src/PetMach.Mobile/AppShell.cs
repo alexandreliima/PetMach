@@ -2,23 +2,59 @@ namespace PetMach.Mobile;
 
 public sealed class AppShell : Shell
 {
-    public AppShell(MainPage mainPage, HomePage homePage)
+    public AppShell(
+        MainPage mainPage,
+        DiscoveryPage discoveryPage,
+        MatchesPage matchesPage,
+        ConversationsPage conversationsPage,
+        HomePage homePage)
     {
         FlyoutBehavior = FlyoutBehavior.Disabled;
-        Shell.SetTabBarIsVisible(this, false);
-        Items.Add(new ShellContent
+        FlyoutIsPresented = false;
+        FlyoutBackdrop = Brush.Transparent;
+
+        ShellContent welcome = new()
         {
             Title = "Boas-vindas",
             Route = "welcome",
             Content = mainPage,
-        });
-        Items.Add(new ShellContent
+        };
+        Shell.SetTabBarIsVisible(welcome, false);
+        Items.Add(welcome);
+
+        TabBar app = new() { Route = "app" };
+        app.Items.Add(new ShellContent
         {
-            Title = "Início",
-            Route = "home",
-            Content = homePage,
+            Title = "Descobrir",
+            Route = "network",
+            Content = discoveryPage,
+            Icon = "tab_discover.svg",
         });
+        app.Items.Add(new ShellContent
+        {
+            Title = "Encontros",
+            Route = "matches-tab",
+            Content = matchesPage,
+            Icon = "tab_meetings.svg",
+        });
+        app.Items.Add(new ShellContent
+        {
+            Title = "Conversas",
+            Route = "conversations-tab",
+            Content = conversationsPage,
+            Icon = "tab_chat.svg",
+        });
+        app.Items.Add(new ShellContent
+        {
+            Title = "Perfil",
+            Route = "menu",
+            Content = homePage,
+            Icon = "tab_profile.svg",
+        });
+        Items.Add(app);
+
         Routing.RegisterRoute("login", typeof(LoginPage));
+        Routing.RegisterRoute("onboarding", typeof(OnboardingPage));
         Routing.RegisterRoute("register", typeof(RegisterPage));
         Routing.RegisterRoute("about", typeof(AboutPage));
         Routing.RegisterRoute("tutor-profile", typeof(TutorProfilePage));
@@ -34,5 +70,6 @@ public sealed class AppShell : Shell
         Routing.RegisterRoute("partner-spaces", typeof(PartnerSpacesPage));
         Routing.RegisterRoute("reservations", typeof(ReservationsPage));
         Routing.RegisterRoute("partner-operations", typeof(PartnerOperationsPage));
+        Routing.RegisterRoute("adoption", typeof(AdoptionPage));
     }
 }

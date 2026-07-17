@@ -20,7 +20,7 @@ public sealed class RegisterViewModelTests
 
         await viewModel.RegisterCommand.ExecuteAsync(null);
 
-        navigator.Route.Should().Be("login");
+        navigator.Route.Should().Be("login?email=tutor%40example.test&registered=true");
     }
 
     private sealed class SuccessfulAuthApi : IAuthApiClient

@@ -43,6 +43,7 @@ public sealed class DogEndpointsTests : IClassFixture<PetMachApiFactory>
     [InlineData("/api/v1/reports")]
     [InlineData("/api/v1/moderation/reports")]
     [InlineData("/api/v1/moderation/evidence/11111111-1111-1111-1111-111111111111")]
+    [InlineData("/api/v1/moderation/reports/11111111-1111-1111-1111-111111111111/evidence")]
     [InlineData("/api/v1/reservations/11111111-1111-1111-1111-111111111111/history")]
     [InlineData("/api/v1/partners/reservations/11111111-1111-1111-1111-111111111111/history")]
     public async Task OwnerDataShouldRejectAnonymousUsers(string path)

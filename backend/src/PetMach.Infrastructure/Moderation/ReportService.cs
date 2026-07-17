@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using PetMach.Application.Identity;
 using PetMach.Application.Moderation;
+using PetMach.Contracts.Identity;
 using PetMach.Contracts.Moderation;
 using PetMach.Domain.Moderation;
 using PetMach.Domain.SharedKernel;
@@ -8,7 +10,7 @@ using PetMach.Infrastructure.Persistence;
 
 namespace PetMach.Infrastructure.Moderation;
 
-internal sealed class ReportService(PetMachDbContext dbContext, IWebHostEnvironment environment, TimeProvider timeProvider) : IReportService
+internal sealed class ReportService(PetMachDbContext dbContext, IWebHostEnvironment environment, TimeProvider timeProvider, IIdentityService identityService) : IReportService
 {
     private const long MaximumEvidenceLength = 5 * 1024 * 1024;
     private static readonly DomainError Invalid = new("reports.invalid", "A denúncia ou evidência é inválida.");
@@ -80,6 +82,53 @@ internal sealed class ReportService(PetMachDbContext dbContext, IWebHostEnvironm
         string fullPath = Path.Combine(environment.ContentRootPath, ".dev-storage", evidence.StorageKey);
         if (!File.Exists(fullPath)) return Result.Failure<ProtectedEvidenceFile>(NotFound);
         return Result.Success(new ProtectedEvidenceFile(File.OpenRead(fullPath), evidence.ContentType));
+    }
+
+    public async Task<Result<ModerationActionResponse>> ApplyActionAsync(Guid moderatorUserId, Guid reportId, ApplyModerationActionRequest request, CancellationToken cancellationToken)
+    {
+        Report? report = await dbContext.Reports.SingleOrDefaultAsync(x => x.Id == reportId, cancellationToken);
+        if (report is null) return Result.Failure<ModerationActionResponse>(NotFound);
+        ModerationActionType actionType = Enum.Parse<ModerationActionType>(request.Action.ToString());
+        bool compatible = actionType switch
+        {
+            ModerationActionType.SuspendUser => report.TargetType == ReportTargetType.User,
+            ModerationActionType.SuspendDog => report.TargetType == ReportTargetType.Dog,
+            ModerationActionType.SuspendAdoptionProfile => report.TargetType == ReportTargetType.AdoptionProfile,
+            _ => false,
+        };
+        if (!compatible || report.Status != ReportStatus.UnderReview) return Result.Failure<ModerationActionResponse>(Invalid);
+        DateTimeOffset now = timeProvider.GetUtcNow();
+        if (actionType == ModerationActionType.SuspendUser)
+        {
+            Result suspended = await identityService.SetSuspensionAsync(moderatorUserId, report.TargetId, new SetAccountSuspensionRequest(true), cancellationToken);
+            if (suspended.IsFailure) return Result.Failure<ModerationActionResponse>(Invalid);
+        }
+        else if (actionType == ModerationActionType.SuspendDog)
+        {
+            var dog = await dbContext.Dogs.SingleOrDefaultAsync(x => x.Id == report.TargetId, cancellationToken);
+            if (dog is null) return Result.Failure<ModerationActionResponse>(NotFound);
+            try { dog.Suspend(now); } catch (InvalidOperationException) { return Result.Failure<ModerationActionResponse>(Invalid); }
+        }
+        else
+        {
+            var profile = await dbContext.AdoptionProfiles.SingleOrDefaultAsync(x => x.Id == report.TargetId, cancellationToken);
+            if (profile is null) return Result.Failure<ModerationActionResponse>(NotFound);
+            try { profile.Suspend(now); } catch (InvalidOperationException) { return Result.Failure<ModerationActionResponse>(Invalid); }
+        }
+        report.MarkActioned(moderatorUserId, now);
+        ModerationAction action = new(report.Id, moderatorUserId, actionType, report.TargetType, report.TargetId, now);
+        dbContext.ModerationActions.Add(action);
+        try { await dbContext.SaveChangesAsync(cancellationToken); }
+        catch (DbUpdateException) { return Result.Failure<ModerationActionResponse>(Conflict); }
+        return Result.Success(new ModerationActionResponse(action.Id, report.Id, action.ActionType.ToString(), action.TargetType.ToString(), action.TargetId, action.OccurredAtUtc));
+    }
+
+    public async Task<Result<IReadOnlyCollection<ReportEvidenceResponse>>> ListEvidenceAsync(Guid reportId, CancellationToken cancellationToken)
+    {
+        if (!await dbContext.Reports.AnyAsync(x => x.Id == reportId, cancellationToken)) return Result.Failure<IReadOnlyCollection<ReportEvidenceResponse>>(NotFound);
+        ReportEvidenceResponse[] items = await dbContext.ReportEvidence.AsNoTracking().Where(x => x.ReportId == reportId).OrderBy(x => x.CreatedAtUtc)
+            .Select(x => new ReportEvidenceResponse(x.Id, x.ContentType, x.Length, x.CreatedAtUtc)).ToArrayAsync(cancellationToken);
+        return Result.Success<IReadOnlyCollection<ReportEvidenceResponse>>(items);
     }
 
     private IQueryable<ReportResponse> Query() =>

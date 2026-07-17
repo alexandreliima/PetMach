@@ -32,6 +32,13 @@
             </Border>
             <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
                 <VerticalStackLayout Spacing="10">
+                    <Label FontAttributes="Bold" FontSize="20" Text="Adoção responsável" />
+                    <Label Text="Publique, candidate-se ou denuncie uma publicação inadequada." TextColor="#6B5E56" />
+                    <Button Command="{Binding OpenAdoptionCommand}" CornerRadius="16" Text="Abrir adoção" />
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="White" Padding="22" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="10">
                     <Label FontAttributes="Bold" FontSize="20" Text="Encontros" />
                     <Label Text="Proponha um encontro em local público para um match ativo." TextColor="#6B5E56" />
                     <Button Command="{Binding OpenMeetingsCommand}" CornerRadius="16" Text="Gerenciar encontros" />

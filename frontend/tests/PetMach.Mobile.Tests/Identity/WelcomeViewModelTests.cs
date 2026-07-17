@@ -7,6 +7,17 @@ namespace PetMach.Mobile.Tests.Identity;
 public sealed class WelcomeViewModelTests
 {
     [Fact]
+    public async Task OnboardingCommandShouldOpenTheGettingStartedScreen()
+    {
+        Navigator navigator = new();
+        WelcomeViewModel viewModel = new(navigator);
+
+        await viewModel.OpenOnboardingCommand.ExecuteAsync(null);
+
+        navigator.Route.Should().Be("onboarding");
+    }
+
+    [Fact]
     public async Task RegistrationCommandShouldNavigateToRegistration()
     {
         Navigator navigator = new();

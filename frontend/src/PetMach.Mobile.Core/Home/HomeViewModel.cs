@@ -37,4 +37,7 @@ public sealed partial class HomeViewModel(IMobileNavigator navigator)
 
     [RelayCommand]
     private Task OpenPartnerOperationsAsync() => navigator.GoToAsync("partner-operations");
+
+    [RelayCommand]
+    private Task OpenAdoptionAsync() => navigator.GoToAsync("adoption");
 }

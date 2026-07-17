@@ -1,31 +1,63 @@
 @page "/"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Policy = "AdministrationAccess")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AdminApiClient Api
 
-<PageTitle>PetMach Administração</PageTitle>
-
+<PageTitle>Moderação — PetMach Admin</PageTitle>
 <section class="dashboard" aria-labelledby="dashboard-title">
-    <p class="eyebrow">Fundação administrativa</p>
-    <h1 id="dashboard-title">Painel PetMach</h1>
-    <p class="subtitle">
-        A estrutura do painel está pronta. Indicadores e gestões serão conectados aos módulos nas próximas fases.
-    </p>
-
-    <div class="cards" aria-label="Áreas administrativas planejadas">
-        @foreach (string area in Areas)
-        {
-            <article class="card">
-                <span class="status">Planejado</span>
-                <h2>@area</h2>
-            </article>
-        }
-    </div>
+    <p class="eyebrow">Fila administrativa</p>
+    <h1 id="dashboard-title">Denúncias e moderação</h1>
+    <p class="subtitle">Descrições e evidências são restritas à equipe autorizada.</p>
+    @if (reports.Count == 0)
+    {
+        <p>Nenhuma denúncia aguardando tratamento.</p>
+    }
+    @foreach (ReportResponse report in reports)
+    {
+        <article class="card">
+            <span class="status">@report.Status</span>
+            <h2>@report.TargetType — @report.Reason</h2>
+            <p>@report.Description</p>
+            <p>Alvo: <code>@report.TargetId</code> · @report.CreatedAtUtc.ToLocalTime().ToString("g")</p>
+            @if (evidence.TryGetValue(report.Id, out IReadOnlyCollection<ReportEvidenceResponse>? files))
+            {
+                @foreach (ReportEvidenceResponse file in files)
+                {
+                    <a href="/admin/evidence/@file.Id" target="_blank" rel="noopener">Evidência @file.ContentType (@(file.Length / 1024) KB)</a>
+                }
+            }
+            <div class="actions">
+                @if (report.Status == "Submitted")
+                {
+                    <form method="post" action="/admin/reports/@report.Id/review"><AntiforgeryToken /><button type="submit">Iniciar revisão</button></form>
+                }
+                @if (report.Status is "Submitted" or "UnderReview")
+                {
+                    <form method="post" action="/admin/reports/@report.Id/dismiss"><AntiforgeryToken /><button type="submit">Arquivar</button></form>
+                }
+                @if (report.Status == "UnderReview")
+                {
+                    string? action = report.TargetType switch { "User" => "SuspendUser", "Dog" => "SuspendDog", "AdoptionProfile" => "SuspendAdoptionProfile", _ => null };
+                    @if (action is not null)
+                    {
+                        <form method="post" action="/admin/reports/@report.Id/actions/@action"><AntiforgeryToken /><button type="submit">Aplicar suspensão</button></form>
+                    }
+                }
+            </div>
+        </article>
+    }
 </section>
 
 @code {
-    private static readonly string[] Areas =
-    [
-        "Tutores e cães",
-        "Parceiros e reservas",
-        "Denúncias e moderação",
-        "Parâmetros do sistema",
-    ];
+    private IReadOnlyCollection<ReportResponse> reports = [];
+    private readonly Dictionary<Guid, IReadOnlyCollection<ReportEvidenceResponse>> evidence = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        string token = state.User.FindFirst("access_token")?.Value ?? string.Empty;
+        reports = await Api.ReportsAsync(token, CancellationToken.None);
+        foreach (ReportResponse report in reports.Where(x => x.EvidenceCount > 0))
+            evidence[report.Id] = await Api.EvidenceListAsync(token, report.Id, CancellationToken.None);
+    }
 }

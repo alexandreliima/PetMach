@@ -6,7 +6,7 @@
     <RootNamespace>PetMach.Mobile</RootNamespace>
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
-    <ApplicationTitle>PetMach</ApplicationTitle>
+    <ApplicationTitle>PetMatch</ApplicationTitle>
     <ApplicationId>com.petmach.mobile</ApplicationId>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
@@ -20,6 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <MauiImage Include="Resources\Images\petmach_welcome_dogs.png" />
+    <MauiImage Include="Resources\Images\petmatch_splash_scene_android.jpg" />
+    <MauiImage Include="Resources\Images\petmatch_onboarding_dogs_android.jpg" />
+    <MauiImage Include="Resources\Images\petmatch_logo.svg" />
+    <MauiImage Include="Resources\Images\tab_discover.svg" />
+    <MauiImage Include="Resources\Images\tab_meetings.svg" />
+    <MauiImage Include="Resources\Images\tab_chat.svg" />
+    <MauiImage Include="Resources\Images\tab_profile.svg" />
+    <MauiSplashScreen Include="Resources\Images\petmatch_logo.svg" Color="#FFF9F3" BaseSize="160,160" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PetMach.Mobile.Core\PetMach.Mobile.Core.csproj" />

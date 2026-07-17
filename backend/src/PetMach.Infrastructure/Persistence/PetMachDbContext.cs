@@ -49,6 +49,7 @@ public sealed class PetMachDbContext(DbContextOptions<PetMachDbContext> options)
     public DbSet<AdoptionApplicationHistory> AdoptionApplicationHistory => Set<AdoptionApplicationHistory>();
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<ReportEvidence> ReportEvidence => Set<ReportEvidence>();
+    public DbSet<ModerationAction> ModerationActions => Set<ModerationAction>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -328,6 +329,17 @@ public sealed class PetMachDbContext(DbContextOptions<PetMachDbContext> options)
             entity.Property(x => x.ContentType).HasMaxLength(50).IsRequired();
             entity.HasIndex(x => new { x.ReportId, x.CreatedAtUtc });
             entity.HasOne<Report>().WithMany().HasForeignKey(x => x.ReportId).OnDelete(DeleteBehavior.Cascade);
+        });
+        builder.Entity<ModerationAction>(entity =>
+        {
+            entity.ToTable("Actions", "moderation");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.ActionType).HasConversion<string>().HasMaxLength(40).IsRequired();
+            entity.Property(x => x.TargetType).HasConversion<string>().HasMaxLength(32).IsRequired();
+            entity.HasIndex(x => x.ReportId).IsUnique();
+            entity.HasIndex(x => new { x.ModeratorUserId, x.OccurredAtUtc });
+            entity.HasOne<Report>().WithOne().HasForeignKey<ModerationAction>(x => x.ReportId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne<PetMachUser>().WithMany().HasForeignKey(x => x.ModeratorUserId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

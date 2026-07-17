@@ -1,35 +1,183 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="PetMach.Mobile.DiscoveryPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Descoberta" BackgroundColor="{StaticResource Surface}">
-    <ScrollView><VerticalStackLayout Padding="24" Spacing="16">
-        <Label FontAttributes="Bold" FontSize="30" Text="Descobrir cães" />
-        <Picker ItemDisplayBinding="{Binding Name}" ItemsSource="{Binding MyDogs}" SelectedItem="{Binding SelectedDog}" Title="Descobrir com qual cão?" />
-        <Label FontAttributes="Bold" Text="Filtros" />
-        <Entry Placeholder="Raça" Text="{Binding BreedFilter}" />
-        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-            <Picker ItemsSource="{Binding SexOptions}" SelectedItem="{Binding SexFilter}" Title="Sexo" />
-            <Picker Grid.Column="1" ItemsSource="{Binding SizeOptions}" SelectedItem="{Binding SizeFilter}" Title="Porte" />
+<ContentPage
+    x:Class="PetMach.Mobile.DiscoveryPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Shell.NavBarIsVisible="False"
+    Title="Descobrir">
+    <Grid Padding="18,18,18,8" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="10">
+        <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+            <HorizontalStackLayout Spacing="8">
+                <Image HeightRequest="36" Source="petmatch_logo.svg" WidthRequest="36" />
+                <Label FontAttributes="Bold" FontSize="24" VerticalTextAlignment="Center">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Pet" TextColor="{StaticResource TextPrimary}" />
+                            <Span Text="Match" TextColor="{StaticResource Primary}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </HorizontalStackLayout>
+            <Button
+                Grid.Column="1"
+                BackgroundColor="{StaticResource SurfaceCard}"
+                BorderColor="{StaticResource Border}"
+                BorderWidth="1"
+                Command="{Binding ToggleFiltersCommand}"
+                CornerRadius="22"
+                FontAttributes="None"
+                FontSize="20"
+                HeightRequest="44"
+                Padding="0"
+                Text="☷"
+                TextColor="{StaticResource TextPrimary}"
+                WidthRequest="44" />
         </Grid>
-        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-            <Picker ItemsSource="{Binding EnergyOptions}" SelectedItem="{Binding EnergyLevelFilter}" Title="Energia" />
-            <Picker Grid.Column="1" ItemsSource="{Binding GoalOptions}" SelectedItem="{Binding GoalFilter}" Title="Objetivo" />
-        </Grid>
-        <Grid ColumnDefinitions="*,Auto"><Label Text="Somente castrados" VerticalTextAlignment="Center" /><Switch Grid.Column="1" IsToggled="{Binding OnlyNeutered}" /></Grid>
-        <Grid ColumnDefinitions="*,Auto"><Label Text="Vacinação atualizada" VerticalTextAlignment="Center" /><Switch Grid.Column="1" IsToggled="{Binding OnlyVaccinated}" /></Grid>
-        <Grid ColumnDefinitions="*,*" ColumnSpacing="10"><Button Command="{Binding RefreshCommand}" Text="Aplicar filtros" /><Button Grid.Column="1" Command="{Binding ClearFiltersCommand}" Text="Limpar" /></Grid>
-        <Border BackgroundColor="White" Padding="24" Stroke="#E7D8CD" StrokeShape="RoundRectangle 24">
-            <VerticalStackLayout Spacing="10">
-                <Label FontAttributes="Bold" FontSize="30" Text="{Binding CurrentDog.Name, FallbackValue='Sem novos perfis'}" />
-                <Label FontSize="18" Text="{Binding CurrentDog.Breed}" TextColor="#6B5E56" />
-                <Label Text="{Binding CurrentDog.Region, StringFormat='Região: {0}'}" />
-                <Label Text="{Binding CurrentDog.Temperament}" />
-                <Label Text="{Binding CurrentDog.VaccinationUpToDate, StringFormat='Vacinação atualizada: {0}'}" TextColor="#4D704D" />
-            </VerticalStackLayout>
-        </Border>
-        <Grid ColumnDefinitions="*,*" ColumnSpacing="12"><Button Command="{Binding PassCommand}" CornerRadius="16" Text="Ignorar" /><Button Grid.Column="1" BackgroundColor="{StaticResource Primary}" Command="{Binding LikeCommand}" CornerRadius="16" Text="Curtir" /></Grid>
-        <Button BackgroundColor="Transparent" Command="{Binding BlockCommand}" FontSize="12" Text="Bloquear este tutor" TextColor="#9A3A2A" />
-        <Button Command="{Binding LoadMoreCommand}" Text="Carregar mais perfis" />
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-        <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="#7A3323" />
-        <Label FontSize="12" HorizontalTextAlignment="Center" Text="A localização exata nunca é compartilhada." TextColor="#7A6D65" />
-    </VerticalStackLayout></ScrollView>
+
+        <VerticalStackLayout Grid.Row="1" Spacing="8">
+            <Picker
+                ItemDisplayBinding="{Binding Name}"
+                ItemsSource="{Binding MyDogs}"
+                SelectedItem="{Binding SelectedDog}"
+                Title="Escolha seu pet para descobrir" />
+            <Border
+                BackgroundColor="{StaticResource SurfaceCard}"
+                IsVisible="{Binding ShowFilters}"
+                Padding="14"
+                StrokeShape="RoundRectangle 18">
+                <VerticalStackLayout Spacing="9">
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Entry Placeholder="Raça" Text="{Binding BreedFilter}" />
+                        <Picker Grid.Column="1" ItemsSource="{Binding SizeOptions}" SelectedItem="{Binding SizeFilter}" Title="Porte" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Picker ItemsSource="{Binding SexOptions}" SelectedItem="{Binding SexFilter}" Title="Sexo" />
+                        <Picker Grid.Column="1" ItemsSource="{Binding EnergyOptions}" SelectedItem="{Binding EnergyLevelFilter}" Title="Energia" />
+                    </Grid>
+                    <Picker ItemsSource="{Binding GoalOptions}" SelectedItem="{Binding GoalFilter}" Title="Objetivo" />
+                    <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="6">
+                        <Label FontSize="12" Text="Castrado" VerticalTextAlignment="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding OnlyNeutered}" />
+                        <Label Grid.Column="2" FontSize="12" Text="Vacinação em dia" VerticalTextAlignment="Center" />
+                        <Switch Grid.Column="3" IsToggled="{Binding OnlyVaccinated}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Command="{Binding RefreshCommand}" Text="Aplicar filtros" />
+                        <Button Grid.Column="1" Command="{Binding ClearFiltersCommand}" Style="{StaticResource OutlineButton}" Text="Limpar" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+
+        <CollectionView
+            Grid.Row="2"
+            EmptyView="Nenhum animal disponível na rede agora."
+            ItemsSource="{Binding Candidates}"
+            RemainingItemsThreshold="2"
+            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Margin="0,0,0,18" Spacing="12">
+                        <Border
+                            BackgroundColor="#D9CEC3"
+                            HeightRequest="470"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 28">
+                            <Grid>
+                                <Image
+                                    Aspect="AspectFill"
+                                    Source="{Binding PrimaryPhotoUrl, TargetNullValue=petmach_welcome_dogs.png}" />
+                                <BoxView VerticalOptions="End" HeightRequest="210">
+                                    <BoxView.Background>
+                                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                            <GradientStop Offset="0" Color="#00123C38" />
+                                            <GradientStop Offset="1" Color="#D9123C38" />
+                                        </LinearGradientBrush>
+                                    </BoxView.Background>
+                                </BoxView>
+                                <Border
+                                    Margin="14"
+                                    BackgroundColor="#EFFFFFFF"
+                                    HorizontalOptions="Start"
+                                    Padding="10,6"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 12"
+                                    VerticalOptions="Start">
+                                    <Label FontAttributes="Bold" FontSize="12" Text="★ Novo por aqui" TextColor="{StaticResource Primary}" />
+                                </Border>
+                                <VerticalStackLayout
+                                    Margin="20"
+                                    Spacing="5"
+                                    VerticalOptions="End">
+                                    <Label FontAttributes="Bold" FontSize="34" Text="{Binding Name}" TextColor="White" />
+                                    <Label FontSize="17" Text="{Binding Breed}" TextColor="White" />
+                                    <Label FontSize="14" Text="{Binding Region, StringFormat='⌖  {0}'}" TextColor="White" />
+                                    <HorizontalStackLayout Spacing="7">
+                                        <Border BackgroundColor="#B8123C38" Padding="10,5" StrokeThickness="0" StrokeShape="RoundRectangle 12">
+                                            <Label FontSize="12" Text="{Binding Temperament}" TextColor="White" />
+                                        </Border>
+                                        <Border BackgroundColor="#B82D8B7D" Padding="10,5" StrokeThickness="0" StrokeShape="RoundRectangle 12">
+                                            <Label FontSize="12" Text="✓ Vacinado" TextColor="White" />
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding VaccinationUpToDate}" Value="False">
+                                                    <Setter Property="IsVisible" Value="False" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                        </Border>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="50" Padding="46,0">
+                            <Button
+                                BackgroundColor="White"
+                                BorderColor="{StaticResource Border}"
+                                BorderWidth="1"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.PassCommand}"
+                                CommandParameter="{Binding .}"
+                                CornerRadius="34"
+                                FontAttributes="None"
+                                FontSize="38"
+                                HeightRequest="68"
+                                Padding="0"
+                                Text="×"
+                                TextColor="{StaticResource Primary}"
+                                WidthRequest="68" />
+                            <Button
+                                Grid.Column="1"
+                                BackgroundColor="White"
+                                BorderColor="{StaticResource Border}"
+                                BorderWidth="1"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.LikeCommand}"
+                                CommandParameter="{Binding .}"
+                                CornerRadius="34"
+                                FontAttributes="None"
+                                FontSize="31"
+                                HeightRequest="68"
+                                Padding="0"
+                                Text="♥"
+                                TextColor="{StaticResource Teal}"
+                                WidthRequest="68" />
+                        </Grid>
+                        <Button
+                            BackgroundColor="Transparent"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.BlockCommand}"
+                            CommandParameter="{Binding .}"
+                            FontAttributes="None"
+                            FontSize="11"
+                            HeightRequest="30"
+                            Text="Bloquear este tutor"
+                            TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <ActivityIndicator Grid.Row="3" Color="{StaticResource Primary}" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+        <VerticalStackLayout Grid.Row="4" Spacing="2">
+            <Label FontSize="12" HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="{StaticResource Danger}" />
+            <Label FontSize="10" HorizontalTextAlignment="Center" Text="Sua localização exata nunca é compartilhada." TextColor="{StaticResource TextSecondary}" />
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

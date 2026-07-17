@@ -35,4 +35,9 @@ public sealed class Report
         if (moderatorUserId == Guid.Empty || Status is not (ReportStatus.Submitted or ReportStatus.UnderReview)) throw new InvalidOperationException("Denúncia não pode ser arquivada.");
         Status = ReportStatus.Dismissed; ReviewedByUserId = moderatorUserId; UpdatedAtUtc = now.ToUniversalTime();
     }
+    public void MarkActioned(Guid moderatorUserId, DateTimeOffset now)
+    {
+        if (moderatorUserId == Guid.Empty || Status != ReportStatus.UnderReview) throw new InvalidOperationException("Denúncia não pode receber ação.");
+        Status = ReportStatus.Actioned; ReviewedByUserId = moderatorUserId; UpdatedAtUtc = now.ToUniversalTime();
+    }
 }

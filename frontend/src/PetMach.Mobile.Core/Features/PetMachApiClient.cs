@@ -141,6 +141,33 @@ public sealed class PetMachApiClient(HttpClient httpClient, AuthenticationSessio
     public async Task<ReservationModel> TransitionPartnerReservationAsync(Guid reservationId, string transition, bool paymentReceivedOnSite, CancellationToken cancellationToken) =>
         await SendAndReadAsync<ReservationModel>(HttpMethod.Put, $"api/v1/partners/reservations/{reservationId}/{transition}", transition == "complete" ? JsonContent.Create(new { PaymentReceivedOnSite = paymentReceivedOnSite }) : null, cancellationToken);
 
+    public async Task<IReadOnlyCollection<AdoptionProfileModel>> GetAdoptionProfilesAsync(CancellationToken cancellationToken) =>
+        await SendAndReadAsync<AdoptionProfileModel[]>(HttpMethod.Get, "api/v1/adoption", null, cancellationToken);
+
+    public async Task<AdoptionProfileModel> CreateAdoptionProfileAsync(Guid dogId, string story, string requirements, CancellationToken cancellationToken) =>
+        await SendAndReadAsync<AdoptionProfileModel>(HttpMethod.Post, "api/v1/adoption", JsonContent.Create(new { DogId = dogId, Story = story, Requirements = requirements, TermsAccepted = true }), cancellationToken);
+
+    public async Task SuspendAdoptionProfileAsync(Guid profileId, CancellationToken cancellationToken)
+    {
+        using HttpResponseMessage response = await SendAsync(HttpMethod.Put, $"api/v1/adoption/{profileId}/suspend", null, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<AdoptionApplicationModel> ApplyForAdoptionAsync(Guid profileId, string motivation, string experience, string housingContext, CancellationToken cancellationToken) =>
+        await SendAndReadAsync<AdoptionApplicationModel>(HttpMethod.Post, $"api/v1/adoption/{profileId}/applications", JsonContent.Create(new { Motivation = motivation, Experience = experience, HousingContext = housingContext, TermsAccepted = true }), cancellationToken);
+
+    public async Task<IReadOnlyCollection<AdoptionApplicationModel>> GetMyAdoptionApplicationsAsync(CancellationToken cancellationToken) =>
+        await SendAndReadAsync<AdoptionApplicationModel[]>(HttpMethod.Get, "api/v1/adoption/applications", null, cancellationToken);
+
+    public async Task<AdoptionApplicationModel> TransitionAdoptionApplicationAsync(Guid applicationId, string transition, CancellationToken cancellationToken) =>
+        await SendAndReadAsync<AdoptionApplicationModel>(HttpMethod.Put, $"api/v1/adoption/applications/{applicationId}/{transition}", null, cancellationToken);
+
+    public async Task<ReportModel> ReportAdoptionProfileAsync(Guid profileId, string reason, string description, CancellationToken cancellationToken) =>
+        await SendAndReadAsync<ReportModel>(HttpMethod.Post, "api/v1/reports", JsonContent.Create(new { TargetType = 2, TargetId = profileId, Reason = ReasonValue(reason), Description = description }), cancellationToken);
+
+    public async Task<ReportEvidenceModel> UploadReportEvidenceAsync(Guid reportId, PickedFile file, CancellationToken cancellationToken) =>
+        await UploadAsync<ReportEvidenceModel>($"api/v1/reports/{reportId}/evidence", file, cancellationToken);
+
     private async Task<T> UploadAsync<T>(string path, PickedFile file, CancellationToken cancellationToken)
     {
         using MultipartFormDataContent content = new();
@@ -149,6 +176,16 @@ public sealed class PetMachApiClient(HttpClient httpClient, AuthenticationSessio
         content.Add(fileContent, "file", file.FileName);
         return await SendAndReadAsync<T>(HttpMethod.Post, path, content, cancellationToken);
     }
+
+    private static int ReasonValue(string reason) => reason switch
+    {
+        "Harassment" => 0,
+        "Fraud" => 1,
+        "UnsafeContent" => 2,
+        "AnimalWelfare" => 3,
+        "Spam" => 4,
+        _ => 5,
+    };
 
     private async Task<T> SendAndReadAsync<T>(HttpMethod method, string path, HttpContent? content, CancellationToken cancellationToken)
     {

@@ -19,6 +19,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddTransient<OnboardingPage>();
         builder.Services.AddSingleton<HomePage>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegisterPage>();
@@ -36,6 +37,7 @@ public static class MauiProgram
         builder.Services.AddTransient<PartnerSpacesPage>();
         builder.Services.AddTransient<ReservationsPage>();
         builder.Services.AddTransient<PartnerOperationsPage>();
+        builder.Services.AddTransient<AdoptionPage>();
         builder.Services.AddSingleton<IMobileNavigator, ShellNavigator>();
         builder.Services.AddTransient<WelcomeViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
@@ -54,6 +56,7 @@ public static class MauiProgram
         builder.Services.AddTransient<PartnerSpacesViewModel>();
         builder.Services.AddTransient<ReservationsViewModel>();
         builder.Services.AddTransient<PartnerOperationsViewModel>();
+        builder.Services.AddTransient<AdoptionViewModel>();
         builder.Services.AddTransient<IChatRealtimeClient, SignalRChatRealtimeClient>();
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri("http://10.0.2.2:5049/"), Timeout = TimeSpan.FromSeconds(30) });

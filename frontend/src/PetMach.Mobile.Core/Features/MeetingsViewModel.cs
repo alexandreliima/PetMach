@@ -8,6 +8,7 @@ public sealed partial class MeetingsViewModel(IPetMachApiClient api) : Observabl
 {
     public ObservableCollection<MatchModel> Matches { get; } = [];
     public ObservableCollection<MeetingModel> Meetings { get; } = [];
+    private Guid? requestedMatchId;
     [ObservableProperty] private MatchModel? selectedMatch;
     [ObservableProperty] private DateTime scheduledDate = DateTime.Today.AddDays(1);
     [ObservableProperty] private TimeSpan scheduledTime = new(10, 0, 0);
@@ -27,7 +28,9 @@ public sealed partial class MeetingsViewModel(IPetMachApiClient api) : Observabl
             Meetings.Clear();
             foreach (MatchModel match in await api.GetMatchesAsync(CancellationToken.None)) Matches.Add(match);
             foreach (MeetingModel meeting in await api.GetMeetingsAsync(CancellationToken.None)) Meetings.Add(meeting);
-            SelectedMatch ??= Matches.FirstOrDefault();
+            SelectedMatch = requestedMatchId.HasValue
+                ? Matches.FirstOrDefault(match => match.Id == requestedMatchId.Value)
+                : SelectedMatch ?? Matches.FirstOrDefault();
         }
         catch (AuthenticationRequiredException ex) { StatusMessage = ex.Message; }
         catch (HttpRequestException) { StatusMessage = "Não foi possível carregar os encontros."; }
@@ -57,6 +60,12 @@ public sealed partial class MeetingsViewModel(IPetMachApiClient api) : Observabl
     [RelayCommand] private Task AcceptAsync(MeetingModel meeting) => TransitionAsync(meeting, "accept");
     [RelayCommand] private Task DeclineAsync(MeetingModel meeting) => TransitionAsync(meeting, "decline");
     [RelayCommand] private Task CancelAsync(MeetingModel meeting) => TransitionAsync(meeting, "cancel");
+
+    public void SelectMatch(Guid matchId)
+    {
+        requestedMatchId = matchId;
+        SelectedMatch = Matches.FirstOrDefault(match => match.Id == matchId);
+    }
 
     private async Task TransitionAsync(MeetingModel meeting, string transition)
     {

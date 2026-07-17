@@ -59,7 +59,7 @@ Estado: concluída em 2026-07-16, incluindo migrations e concorrência validadas
 
 ## Fase 7 — Adoção, moderação e administração
 
-Estado: iniciada em 2026-07-16.
+Estado: escopo funcional implementado em 2026-07-16, com migrations e concorrência validadas em PostgreSQL real. Política jurídica de retenção permanece bloqueadora para produção.
 
 - Área independente de adoção e histórico de estados/candidaturas definidas.
 - Denúncias, evidências, fila de revisão, ações, suspensão e auditoria.

@@ -867,6 +867,44 @@ namespace PetMach.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PetMach.Domain.Moderation.ModerationAction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ActionType")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<Guid>("ModeratorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("OccurredAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TargetType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReportId")
+                        .IsUnique();
+
+                    b.HasIndex("ModeratorUserId", "OccurredAtUtc");
+
+                    b.ToTable("Actions", "moderation");
+                });
+
             modelBuilder.Entity("PetMach.Domain.Moderation.Report", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1643,6 +1681,21 @@ namespace PetMach.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PetMach.Domain.Moderation.ModerationAction", b =>
+                {
+                    b.HasOne("PetMach.Infrastructure.Identity.PetMachUser", null)
+                        .WithMany()
+                        .HasForeignKey("ModeratorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PetMach.Domain.Moderation.Report", null)
+                        .WithOne()
+                        .HasForeignKey("PetMach.Domain.Moderation.ModerationAction", "ReportId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

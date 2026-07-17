@@ -3,57 +3,92 @@
     x:Class="PetMach.Mobile.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark=#201C1A}"
     Shell.NavBarIsVisible="False">
-    <ScrollView>
-        <VerticalStackLayout Padding="32,64,32,32" Spacing="20">
-            <Label
-                FontAttributes="Bold"
-                FontSize="14"
-                Text="PETMACH"
-                TextColor="{StaticResource Primary}" />
-            <Label
-                FontAttributes="Bold"
-                FontSize="42"
-                SemanticProperties.HeadingLevel="Level1"
-                Text="Amizades, passeios e cuidado para o seu cão."
-                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark=White}" />
-            <Image
-                Aspect="AspectFit"
-                HeightRequest="155"
-                HorizontalOptions="Fill"
-                SemanticProperties.Description="Dois cães felizes lado a lado, um macho e uma fêmea"
-                Source="petmach_welcome_dogs.png" />
-            <Label
-                FontSize="18"
-                LineHeight="1.4"
-                Text="Encontre boas companhias e experiências seguras perto de você."
-                TextColor="{AppThemeBinding Light=#6B5E56, Dark=#D7C9C0}" />
-            <Button
-                Command="{Binding OpenRegistrationCommand}"
-                CornerRadius="18"
-                HeightRequest="56"
-                Text="Criar minha conta" />
-            <Button
-                BackgroundColor="Transparent"
-                BorderColor="{StaticResource Primary}"
-                BorderWidth="1"
-                Command="{Binding OpenLoginCommand}"
-                CornerRadius="18"
-                HeightRequest="56"
-                Text="Já tenho uma conta"
-                TextColor="{StaticResource Primary}" />
-            <Button
-                BackgroundColor="Transparent"
-                Command="{Binding OpenAboutCommand}"
-                FontAttributes="Bold"
-                Text="Conhecer o PetMach"
-                TextColor="#6B5E56" />
-            <Label
-                FontSize="13"
-                HorizontalTextAlignment="Center"
-                Text="Socialização responsável • Privacidade • Segurança"
-                TextColor="{AppThemeBinding Light=#7A6D65, Dark=#D7C9C0}" />
-        </VerticalStackLayout>
-    </ScrollView>
+    <Grid>
+        <Grid x:Name="SplashContent">
+            <Image Aspect="AspectFill" Source="petmatch_splash_scene_android.jpg" />
+            <VerticalStackLayout
+                Margin="28,112,28,0"
+                Spacing="10"
+                VerticalOptions="Start">
+                <Image HeightRequest="104" HorizontalOptions="Center" Source="petmatch_logo.svg" WidthRequest="104" />
+                <Label FontAttributes="Bold" FontSize="46" HorizontalTextAlignment="Center">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Pet" TextColor="{StaticResource TextPrimary}" />
+                            <Span Text="Match" TextColor="{StaticResource Primary}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label
+                    FontSize="19"
+                    HorizontalTextAlignment="Center"
+                    LineHeight="1.2"
+                    Text="Conexões que fazem&#10;rabos abanarem."
+                    TextColor="{StaticResource TextPrimary}" />
+            </VerticalStackLayout>
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="AdvanceTapped" />
+            </Grid.GestureRecognizers>
+        </Grid>
+
+        <ScrollView x:Name="OnboardingContent" BackgroundColor="{StaticResource Surface}" IsVisible="False">
+            <VerticalStackLayout Padding="26,38,26,24" Spacing="13">
+                <Button
+                    BackgroundColor="Transparent"
+                    Command="{Binding OpenLoginCommand}"
+                    FontAttributes="None"
+                    HeightRequest="34"
+                    HorizontalOptions="End"
+                    Padding="6,0"
+                    Text="Pular"
+                    TextColor="{StaticResource TextPrimary}" />
+                <Image HeightRequest="70" HorizontalOptions="Center" Source="petmatch_logo.svg" WidthRequest="70" />
+                <Label FontAttributes="Bold" FontSize="34" HorizontalTextAlignment="Center" LineHeight="1.05">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Conecte seu pet&#10;a " TextColor="{StaticResource TextPrimary}" />
+                            <Span Text="novos amigos" TextColor="{StaticResource Primary}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label
+                    FontSize="16"
+                    HorizontalTextAlignment="Center"
+                    LineHeight="1.25"
+                    Text="Encontre companheiros para encontros, organize passeios incríveis e descubra espaços parceiros que seu pet vai amar."
+                    TextColor="{StaticResource TextSecondary}" />
+                <Border HeightRequest="390" StrokeThickness="0" StrokeShape="RoundRectangle 28">
+                    <Image Aspect="AspectFill" Source="petmatch_onboarding_dogs_android.jpg" />
+                </Border>
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="8">
+                    <BoxView Color="{StaticResource Primary}" CornerRadius="4" HeightRequest="8" WidthRequest="8" />
+                    <BoxView Color="#D8D2CC" CornerRadius="4" HeightRequest="8" WidthRequest="8" />
+                    <BoxView Color="#D8D2CC" CornerRadius="4" HeightRequest="8" WidthRequest="8" />
+                </HorizontalStackLayout>
+                <Button Command="{Binding OpenLoginCommand}" Text="Vamos começar   →" />
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <VerticalStackLayout Spacing="5">
+                        <Border BackgroundColor="{StaticResource Mint}" HeightRequest="48" HorizontalOptions="Center" Padding="10" StrokeThickness="0" StrokeShape="RoundRectangle 24" WidthRequest="48">
+                            <Label FontSize="22" HorizontalTextAlignment="Center" Text="♧" TextColor="{StaticResource Teal}" />
+                        </Border>
+                        <Label FontSize="11" HorizontalTextAlignment="Center" Text="Novos amigos&#10;para passeios" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="5">
+                        <Border BackgroundColor="#FCE3DC" HeightRequest="48" HorizontalOptions="Center" Padding="10" StrokeThickness="0" StrokeShape="RoundRectangle 24" WidthRequest="48">
+                            <Label FontSize="22" HorizontalTextAlignment="Center" Text="▣" TextColor="{StaticResource Primary}" />
+                        </Border>
+                        <Label FontSize="11" HorizontalTextAlignment="Center" Text="Encontros e&#10;eventos" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="5">
+                        <Border BackgroundColor="{StaticResource Mint}" HeightRequest="48" HorizontalOptions="Center" Padding="10" StrokeThickness="0" StrokeShape="RoundRectangle 24" WidthRequest="48">
+                            <Label FontSize="22" HorizontalTextAlignment="Center" Text="⌂" TextColor="{StaticResource Teal}" />
+                        </Border>
+                        <Label FontSize="11" HorizontalTextAlignment="Center" Text="Espaços&#10;parceiros" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Button BackgroundColor="Transparent" Command="{Binding OpenLoginCommand}" HeightRequest="40" Text="Já tenho uma conta" TextColor="{StaticResource Teal}" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

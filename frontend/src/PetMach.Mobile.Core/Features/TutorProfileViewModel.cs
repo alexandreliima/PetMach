@@ -56,7 +56,7 @@ public sealed partial class TutorProfileViewModel(IPetMachApiClient api, IMobile
             StatusMessage = "Salvando...";
             _ = await api.SaveTutorProfileAsync(new TutorProfileInput(FirstName.Trim(), LastName.Trim(), Clean(Phone), City.Trim(), State.Trim(), Clean(Biography), ShowCity, AllowDiscovery), CancellationToken.None);
             StatusMessage = string.Empty;
-            await navigator.GoToAsync("//home");
+            await navigator.GoToAsync("//app/network");
         }
         catch (AuthenticationRequiredException ex) { StatusMessage = ex.Message; }
         catch (HttpRequestException) { StatusMessage = "Não foi possível salvar. Confira os dados e a conexão com a API."; }

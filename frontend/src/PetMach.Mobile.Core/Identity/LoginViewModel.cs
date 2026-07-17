@@ -20,18 +20,25 @@ public sealed partial class LoginViewModel(AuthenticationSession session, IMobil
             StatusMessage = "Informe o e-mail e a senha.";
             return;
         }
-
         try
         {
             IsBusy = true;
             StatusMessage = "Entrando...";
             await session.LoginAsync(Email.Trim(), Password, CancellationToken.None);
             StatusMessage = string.Empty;
-            await navigator.GoToAsync("//home");
+            await navigator.GoToAsync("//app/network");
+        }
+        catch (AuthenticationApiException ex) when (ex.Code == "identity.email_not_confirmed")
+        {
+            StatusMessage = "Confirme seu e-mail antes de entrar. No ambiente local, consulte a pasta .dev-emails da API.";
+        }
+        catch (AuthenticationApiException ex)
+        {
+            StatusMessage = ex.Message;
         }
         catch (HttpRequestException)
         {
-            StatusMessage = "Não foi possível entrar. Confira os dados e se a API está ligada.";
+            StatusMessage = "Não foi possível conectar à API.";
         }
         finally
         {

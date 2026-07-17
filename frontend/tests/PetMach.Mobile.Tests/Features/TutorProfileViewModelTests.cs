@@ -20,7 +20,7 @@ public sealed class TutorProfileViewModelTests
 
         await viewModel.SaveCommand.ExecuteAsync(null);
 
-        navigator.Route.Should().Be("//home");
+        navigator.Route.Should().Be("//app/network");
     }
 
     private sealed class ProfileApi : IPetMachApiClient
@@ -60,6 +60,14 @@ public sealed class TutorProfileViewModelTests
         public Task<SpaceAvailabilityModel> CreateSpaceAvailabilityAsync(Guid spaceId, DateTimeOffset startsAtUtc, DateTimeOffset endsAtUtc, CancellationToken cancellationToken) => throw new NotSupportedException();
         public Task<IReadOnlyCollection<ReservationModel>> GetPartnerReservationsAsync(CancellationToken cancellationToken) => throw new NotSupportedException();
         public Task<ReservationModel> TransitionPartnerReservationAsync(Guid reservationId, string transition, bool paymentReceivedOnSite, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<IReadOnlyCollection<AdoptionProfileModel>> GetAdoptionProfilesAsync(CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<AdoptionProfileModel> CreateAdoptionProfileAsync(Guid dogId, string story, string requirements, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task SuspendAdoptionProfileAsync(Guid profileId, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<AdoptionApplicationModel> ApplyForAdoptionAsync(Guid profileId, string motivation, string experience, string housingContext, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<IReadOnlyCollection<AdoptionApplicationModel>> GetMyAdoptionApplicationsAsync(CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<AdoptionApplicationModel> TransitionAdoptionApplicationAsync(Guid applicationId, string transition, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<ReportModel> ReportAdoptionProfileAsync(Guid profileId, string reason, string description, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<ReportEvidenceModel> UploadReportEvidenceAsync(Guid reportId, PickedFile file, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 
     private sealed class Navigator : IMobileNavigator

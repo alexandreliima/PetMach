@@ -23,7 +23,7 @@ public sealed class ReportsController(IReportService reports) : ControllerBase
     }
 
     [HttpPost("{reportId:guid}/evidence")]
-    [RequestSizeLimit(5 * 1024 * 1024)]
+    [RequestSizeLimit(6 * 1024 * 1024)]
     public async Task<IActionResult> AddEvidence(Guid reportId, IFormFile file, CancellationToken cancellationToken)
     {
         await using Stream stream = file.OpenReadStream();

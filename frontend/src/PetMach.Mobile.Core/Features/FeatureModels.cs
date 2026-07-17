@@ -89,6 +89,17 @@ public sealed record ReservationModel(Guid Id, Guid AvailabilityId, Guid SpaceId
     public bool CanComplete => Status == "Confirmed" && StartsAtUtc <= DateTimeOffset.UtcNow;
     public bool CanMarkNoShow => Status == "Confirmed" && EndsAtUtc <= DateTimeOffset.UtcNow;
 }
+public sealed record AdoptionProfileModel(Guid Id, Guid DogId, string DogName, string Breed, string Size, string Region, string Story, string Requirements, string Status, DateTimeOffset CreatedAtUtc, bool IsMine)
+{
+    public bool CanApply => !IsMine && Status == "Available";
+    public bool CanSuspend => IsMine && Status is "Available" or "InProgress";
+}
+public sealed record AdoptionApplicationModel(Guid Id, Guid ProfileId, string DogName, string ApplicantName, string Motivation, string Experience, string HousingContext, string Status, DateTimeOffset CreatedAtUtc, bool IsMine)
+{
+    public bool CanWithdraw => IsMine && Status is "Submitted" or "UnderReview";
+}
+public sealed record ReportModel(Guid Id, string TargetType, Guid TargetId, string Reason, string Description, string Status, DateTimeOffset CreatedAtUtc, int EvidenceCount);
+public sealed record ReportEvidenceModel(Guid Id, string ContentType, long Length, DateTimeOffset CreatedAtUtc);
 public sealed record PickedFile(string FileName, string ContentType, byte[] Content);
 
 public sealed class AuthenticationRequiredException : InvalidOperationException

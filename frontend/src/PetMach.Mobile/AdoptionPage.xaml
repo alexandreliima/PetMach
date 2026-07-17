@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PetMach.Mobile.AdoptionPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Adoção" BackgroundColor="{StaticResource Surface}">
+    <ScrollView><VerticalStackLayout Padding="24" Spacing="12">
+        <Label FontAttributes="Bold" FontSize="30" Text="Adoção responsável" /><Button Command="{Binding LoadCommand}" Text="Atualizar" />
+        <Border Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout Spacing="8">
+            <Label FontAttributes="Bold" FontSize="20" Text="Publicar meu cão" />
+            <Picker Title="Cão" ItemsSource="{Binding Dogs}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedDog}" />
+            <Editor AutoSize="TextChanges" Placeholder="Conte a história do cão" Text="{Binding Story}" />
+            <Editor AutoSize="TextChanges" Placeholder="Requisitos para o novo lar" Text="{Binding Requirements}" />
+            <HorizontalStackLayout><CheckBox IsChecked="{Binding PublicationTermsAccepted}" /><Label VerticalTextAlignment="Center" Text="Aceito o termo de adoção responsável" /></HorizontalStackLayout>
+            <Button Command="{Binding PublishCommand}" Text="Publicar" />
+        </VerticalStackLayout></Border>
+        <Label FontAttributes="Bold" FontSize="22" Text="Publicações" />
+        <Picker Title="Selecionar publicação" ItemsSource="{Binding Profiles}" ItemDisplayBinding="{Binding DogName}" SelectedItem="{Binding SelectedProfile}" />
+        <CollectionView HeightRequest="300" ItemsSource="{Binding Profiles}" EmptyView="Nenhuma publicação disponível."><CollectionView.ItemTemplate><DataTemplate>
+            <Border Margin="0,0,0,10" Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout Spacing="5">
+                <Label FontAttributes="Bold" FontSize="19" Text="{Binding DogName}" /><Label Text="{Binding Breed}" /><Label Text="{Binding Region}" /><Label Text="{Binding Story}" /><Label Text="{Binding Requirements}" />
+                <Button Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SuspendCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanSuspend}" Text="Suspender publicação" />
+            </VerticalStackLayout></Border>
+        </DataTemplate></CollectionView.ItemTemplate></CollectionView>
+        <Border Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout Spacing="8">
+            <Label FontAttributes="Bold" FontSize="20" Text="Enviar candidatura" />
+            <Editor Placeholder="Por que deseja adotar?" Text="{Binding Motivation}" /><Editor Placeholder="Sua experiência com cães" Text="{Binding Experience}" /><Editor Placeholder="Contexto do lar" Text="{Binding HousingContext}" />
+            <HorizontalStackLayout><CheckBox IsChecked="{Binding ApplicationTermsAccepted}" /><Label VerticalTextAlignment="Center" Text="Aceito o termo da candidatura" /></HorizontalStackLayout>
+            <Button Command="{Binding ApplyCommand}" Text="Enviar candidatura" />
+        </VerticalStackLayout></Border>
+        <Border Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout Spacing="8">
+            <Label FontAttributes="Bold" FontSize="20" Text="Denunciar publicação" />
+            <Picker ItemsSource="{Binding ReportReasons}" SelectedItem="{Binding SelectedReportReason}" /><Editor Placeholder="Descreva objetivamente o problema" Text="{Binding ReportDescription}" />
+            <Button Command="{Binding PickEvidenceCommand}" Text="Selecionar evidência (opcional)" />
+            <Button Command="{Binding ReportCommand}" Text="Enviar denúncia" />
+        </VerticalStackLayout></Border>
+        <Label FontAttributes="Bold" FontSize="22" Text="Minhas candidaturas" />
+        <CollectionView ItemsSource="{Binding Applications}" EmptyView="Nenhuma candidatura enviada."><CollectionView.ItemTemplate><DataTemplate>
+            <Border Margin="0,0,0,10" Padding="16" BackgroundColor="White" Stroke="#E7D8CD" StrokeShape="RoundRectangle 16"><VerticalStackLayout>
+                <Label FontAttributes="Bold" Text="{Binding DogName}" /><Label Text="{Binding Status}" />
+                <Button Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.WithdrawCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanWithdraw}" Text="Retirar candidatura" />
+            </VerticalStackLayout></Border>
+        </DataTemplate></CollectionView.ItemTemplate></CollectionView>
+        <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" />
+    </VerticalStackLayout></ScrollView>
+</ContentPage>

@@ -8,6 +8,13 @@
         <TimePicker Time="{Binding ScheduledTime}" />
         <Entry MaxLength="160" Placeholder="Nome do local público" Text="{Binding PlaceName}" />
         <Editor AutoSize="TextChanges" MaxLength="1000" Placeholder="Observações opcionais" Text="{Binding Notes}" />
+        <Border BackgroundColor="#F4ECE6" Padding="14" Stroke="#E7D8CD" StrokeShape="RoundRectangle 14">
+            <VerticalStackLayout Spacing="8">
+                <Label FontAttributes="Bold" Text="Encontrar em um petshop parceiro" />
+                <Label FontSize="12" Text="Reserve um espaço seguro para os cães e depois envie a proposta ao outro tutor." />
+                <Button Clicked="OpenPartnerReservationClicked" Text="Ver petshops e horários" />
+            </VerticalStackLayout>
+        </Border>
         <Button Command="{Binding ProposeCommand}" Text="Propor encontro" />
         <Label FontAttributes="Bold" FontSize="22" Text="Propostas" />
         <CollectionView ItemsSource="{Binding Meetings}" EmptyView="Nenhuma proposta de encontro.">

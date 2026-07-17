@@ -18,6 +18,7 @@ public sealed class HomeViewModelTests
     [InlineData("partner-spaces", "partner-spaces")]
     [InlineData("reservations", "reservations")]
     [InlineData("partner-operations", "partner-operations")]
+    [InlineData("adoption", "adoption")]
     public async Task FeatureCommandsShouldOpenTheExpectedRoute(string feature, string route)
     {
         Navigator navigator = new();
@@ -33,7 +34,8 @@ public sealed class HomeViewModelTests
         else if (feature == "meetings") await viewModel.OpenMeetingsCommand.ExecuteAsync(null);
         else if (feature == "partner-spaces") await viewModel.OpenPartnerSpacesCommand.ExecuteAsync(null);
         else if (feature == "reservations") await viewModel.OpenReservationsCommand.ExecuteAsync(null);
-        else await viewModel.OpenPartnerOperationsCommand.ExecuteAsync(null);
+        else if (feature == "partner-operations") await viewModel.OpenPartnerOperationsCommand.ExecuteAsync(null);
+        else await viewModel.OpenAdoptionCommand.ExecuteAsync(null);
 
         navigator.Route.Should().Be(route);
     }

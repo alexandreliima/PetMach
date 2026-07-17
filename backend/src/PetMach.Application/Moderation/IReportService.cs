@@ -13,4 +13,6 @@ public interface IReportService
     Task<IReadOnlyCollection<ReportResponse>> QueueAsync(CancellationToken cancellationToken);
     Task<Result<ReportResponse>> TransitionAsync(Guid moderatorUserId, Guid reportId, string transition, CancellationToken cancellationToken);
     Task<Result<ProtectedEvidenceFile>> GetEvidenceAsync(Guid evidenceId, CancellationToken cancellationToken);
+    Task<Result<ModerationActionResponse>> ApplyActionAsync(Guid moderatorUserId, Guid reportId, ApplyModerationActionRequest request, CancellationToken cancellationToken);
+    Task<Result<IReadOnlyCollection<ReportEvidenceResponse>>> ListEvidenceAsync(Guid reportId, CancellationToken cancellationToken);
 }

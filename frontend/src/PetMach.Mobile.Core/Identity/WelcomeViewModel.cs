@@ -6,6 +6,9 @@ namespace PetMach.Mobile.Core.Identity;
 public sealed partial class WelcomeViewModel(IMobileNavigator navigator)
 {
     [RelayCommand]
+    public Task OpenOnboardingAsync() => navigator.GoToAsync("onboarding");
+
+    [RelayCommand]
     private Task OpenLoginAsync() => navigator.GoToAsync("login");
 
     [RelayCommand]
