@@ -1,94 +1,169 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="PetMach.Mobile.MainPage"
+    x:Name="RootPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Shell.NavBarIsVisible="False">
-    <Grid>
-        <Grid x:Name="SplashContent">
-            <Image Aspect="AspectFill" Source="petmatch_splash_scene_android.jpg" />
+    <Grid BackgroundColor="{StaticResource PetMachBackground}">
+        <Grid
+            x:Name="SplashContent"
+            Padding="{StaticResource PetMachPagePadding}">
             <VerticalStackLayout
-                Margin="28,112,28,0"
-                Spacing="10"
-                VerticalOptions="Start">
-                <Image HeightRequest="104" HorizontalOptions="Center" Source="petmatch_logo.svg" WidthRequest="104" />
-                <Label FontAttributes="Bold" FontSize="46" HorizontalTextAlignment="Center">
+                x:Name="SplashBrand"
+                HorizontalOptions="Center"
+                Spacing="{StaticResource PetMachSpace16}"
+                VerticalOptions="Center">
+                <Border
+                    BackgroundColor="{StaticResource PetMachSurface}"
+                    HeightRequest="132"
+                    Padding="{StaticResource PetMachSpace20}"
+                    Stroke="{StaticResource PetMachPrimarySoft}"
+                    StrokeShape="RoundRectangle 44"
+                    StrokeThickness="2"
+                    WidthRequest="132">
+                    <Image
+                        x:Name="SplashLogo"
+                        Aspect="AspectFit"
+                        SemanticProperties.Description="Logotipo PetMatch"
+                        Source="petmatch_logo.svg" />
+                </Border>
+                <Label
+                    HorizontalTextAlignment="Center"
+                    SemanticProperties.HeadingLevel="Level1"
+                    Style="{StaticResource PetMachDisplayStyle}">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="Pet" TextColor="{StaticResource TextPrimary}" />
-                            <Span Text="Match" TextColor="{StaticResource Primary}" />
+                            <Span Text="Pet" TextColor="{StaticResource PetMachTextPrimary}" />
+                            <Span Text="Match" TextColor="{StaticResource PetMachPrimary}" />
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
                 <Label
-                    FontSize="19"
                     HorizontalTextAlignment="Center"
-                    LineHeight="1.2"
-                    Text="Conexões que fazem&#10;rabos abanarem."
-                    TextColor="{StaticResource TextPrimary}" />
+                    Style="{StaticResource PetMachBodyStyle}"
+                    Text="Conexões que fazem rabos abanarem."
+                    TextColor="{StaticResource PetMachTextSecondary}" />
+                <ActivityIndicator
+                    x:Name="SplashIndicator"
+                    Margin="0,12,0,0"
+                    IsRunning="True"
+                    SemanticProperties.Description="Carregando o PetMatch"
+                    Style="{StaticResource PetMachLoadingIndicatorStyle}" />
             </VerticalStackLayout>
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="AdvanceTapped" />
             </Grid.GestureRecognizers>
         </Grid>
 
-        <ScrollView x:Name="OnboardingContent" BackgroundColor="{StaticResource Surface}" IsVisible="False">
-            <VerticalStackLayout Padding="26,38,26,24" Spacing="13">
+        <Grid
+            x:Name="OnboardingContent"
+            IsVisible="False"
+            Opacity="0"
+            Padding="24,24,24,28"
+            RowDefinitions="Auto,*,Auto,Auto">
+            <Grid ColumnDefinitions="*,Auto">
+                <Image
+                    HeightRequest="44"
+                    HorizontalOptions="Start"
+                    SemanticProperties.Description="PetMatch"
+                    Source="petmatch_logo.svg"
+                    WidthRequest="44" />
                 <Button
-                    BackgroundColor="Transparent"
+                    Grid.Column="1"
                     Command="{Binding OpenLoginCommand}"
-                    FontAttributes="None"
-                    HeightRequest="34"
-                    HorizontalOptions="End"
-                    Padding="6,0"
-                    Text="Pular"
-                    TextColor="{StaticResource TextPrimary}" />
-                <Image HeightRequest="70" HorizontalOptions="Center" Source="petmatch_logo.svg" WidthRequest="70" />
-                <Label FontAttributes="Bold" FontSize="34" HorizontalTextAlignment="Center" LineHeight="1.05">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Text="Conecte seu pet&#10;a " TextColor="{StaticResource TextPrimary}" />
-                            <Span Text="novos amigos" TextColor="{StaticResource Primary}" />
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <Label
-                    FontSize="16"
-                    HorizontalTextAlignment="Center"
-                    LineHeight="1.25"
-                    Text="Encontre companheiros para encontros, organize passeios incríveis e descubra espaços parceiros que seu pet vai amar."
-                    TextColor="{StaticResource TextSecondary}" />
-                <Border HeightRequest="390" StrokeThickness="0" StrokeShape="RoundRectangle 28">
-                    <Image Aspect="AspectFill" Source="petmatch_onboarding_dogs_android.jpg" />
-                </Border>
-                <HorizontalStackLayout HorizontalOptions="Center" Spacing="8">
-                    <BoxView Color="{StaticResource Primary}" CornerRadius="4" HeightRequest="8" WidthRequest="8" />
-                    <BoxView Color="#D8D2CC" CornerRadius="4" HeightRequest="8" WidthRequest="8" />
-                    <BoxView Color="#D8D2CC" CornerRadius="4" HeightRequest="8" WidthRequest="8" />
-                </HorizontalStackLayout>
-                <Button Command="{Binding OpenLoginCommand}" Text="Vamos começar   →" />
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                    <VerticalStackLayout Spacing="5">
-                        <Border BackgroundColor="{StaticResource Mint}" HeightRequest="48" HorizontalOptions="Center" Padding="10" StrokeThickness="0" StrokeShape="RoundRectangle 24" WidthRequest="48">
-                            <Label FontSize="22" HorizontalTextAlignment="Center" Text="♧" TextColor="{StaticResource Teal}" />
-                        </Border>
-                        <Label FontSize="11" HorizontalTextAlignment="Center" Text="Novos amigos&#10;para passeios" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1" Spacing="5">
-                        <Border BackgroundColor="#FCE3DC" HeightRequest="48" HorizontalOptions="Center" Padding="10" StrokeThickness="0" StrokeShape="RoundRectangle 24" WidthRequest="48">
-                            <Label FontSize="22" HorizontalTextAlignment="Center" Text="▣" TextColor="{StaticResource Primary}" />
-                        </Border>
-                        <Label FontSize="11" HorizontalTextAlignment="Center" Text="Encontros e&#10;eventos" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="2" Spacing="5">
-                        <Border BackgroundColor="{StaticResource Mint}" HeightRequest="48" HorizontalOptions="Center" Padding="10" StrokeThickness="0" StrokeShape="RoundRectangle 24" WidthRequest="48">
-                            <Label FontSize="22" HorizontalTextAlignment="Center" Text="⌂" TextColor="{StaticResource Teal}" />
-                        </Border>
-                        <Label FontSize="11" HorizontalTextAlignment="Center" Text="Espaços&#10;parceiros" />
-                    </VerticalStackLayout>
-                </Grid>
-                <Button BackgroundColor="Transparent" Command="{Binding OpenLoginCommand}" HeightRequest="40" Text="Já tenho uma conta" TextColor="{StaticResource Teal}" />
-            </VerticalStackLayout>
-        </ScrollView>
+                    SemanticProperties.Hint="Vai diretamente para a tela de login"
+                    Style="{StaticResource PetMachGhostButtonStyle}"
+                    Text="Pular" />
+            </Grid>
+
+            <CarouselView
+                x:Name="OnboardingCarousel"
+                Grid.Row="1"
+                IndicatorView="{x:Reference OnboardingIndicator}"
+                ItemsSource="{Binding OnboardingItems, Source={x:Reference RootPage}}"
+                PositionChanged="OnboardingPositionChanged">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+                        <ScrollView>
+                            <VerticalStackLayout
+                                Padding="0,16,0,12"
+                                Spacing="{StaticResource PetMachSpace20}">
+                                <Border
+                                    BackgroundColor="{StaticResource PetMachSurface}"
+                                    HeightRequest="300"
+                                    Padding="0"
+                                    Style="{StaticResource PetMachCardStyle}">
+                                    <Image
+                                        Aspect="{Binding ImageAspect}"
+                                        SemanticProperties.Description="{Binding ImageDescription}"
+                                        Source="{Binding ImageSource}" />
+                                </Border>
+
+                                <VerticalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                                    <Label
+                                        HorizontalTextAlignment="Center"
+                                        SemanticProperties.HeadingLevel="Level1"
+                                        Style="{StaticResource PetMachPageTitleStyle}"
+                                        Text="{Binding Title}" />
+                                    <Label
+                                        HorizontalTextAlignment="Center"
+                                        Style="{StaticResource PetMachBodyStyle}"
+                                        Text="{Binding Description}"
+                                        TextColor="{StaticResource PetMachTextSecondary}" />
+                                </VerticalStackLayout>
+
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{StaticResource PetMachSpace8}">
+                                    <Border Style="{StaticResource PetMachChipStyle}">
+                                        <Label
+                                            HorizontalTextAlignment="Center"
+                                            Style="{StaticResource PetMachBadgeLabelStyle}"
+                                            Text="{Binding FeatureOne}" />
+                                    </Border>
+                                    <Border Grid.Column="1" Style="{StaticResource PetMachSelectedChipStyle}">
+                                        <Label
+                                            HorizontalTextAlignment="Center"
+                                            Style="{StaticResource PetMachBadgeLabelStyle}"
+                                            Text="{Binding FeatureTwo}"
+                                            TextColor="{StaticResource PetMachPrimary}" />
+                                    </Border>
+                                    <Border Grid.Column="2" Style="{StaticResource PetMachChipStyle}">
+                                        <Label
+                                            HorizontalTextAlignment="Center"
+                                            Style="{StaticResource PetMachBadgeLabelStyle}"
+                                            Text="{Binding FeatureThree}" />
+                                    </Border>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+
+            <IndicatorView
+                x:Name="OnboardingIndicator"
+                Grid.Row="2"
+                HorizontalOptions="Center"
+                IndicatorColor="{StaticResource PetMachBorder}"
+                IndicatorSize="9"
+                MaximumVisible="3"
+                SelectedIndicatorColor="{StaticResource PetMachPrimary}" />
+
+            <Grid Grid.Row="3" Margin="0,16,0,0">
+                <Button
+                    x:Name="NextButton"
+                    Clicked="NextClicked"
+                    SemanticProperties.Hint="Avança para a próxima apresentação"
+                    Style="{StaticResource PetMachPrimaryButtonStyle}"
+                    Text="Próximo" />
+                <Button
+                    x:Name="StartButton"
+                    Command="{Binding OpenLoginCommand}"
+                    IsVisible="False"
+                    SemanticProperties.Hint="Abre a tela de login"
+                    Style="{StaticResource PetMachPrimaryButtonStyle}"
+                    Text="Começar" />
+            </Grid>
+        </Grid>
     </Grid>
 </ContentPage>

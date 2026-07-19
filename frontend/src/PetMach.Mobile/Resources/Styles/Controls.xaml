@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Shadow
+        x:Key="PetMachCardShadow"
+        Brush="{StaticResource PetMachShadowColor}"
+        Offset="0,4"
+        Opacity="0.10"
+        Radius="14" />
+
+    <Style x:Key="PetMachButtonBaseStyle" TargetType="Button">
+        <Setter Property="CornerRadius" Value="{StaticResource PetMachRadiusPill}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="HeightRequest" Value="{StaticResource PetMachButtonHeight}" />
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource PetMachTouchTarget}" />
+        <Setter Property="Padding" Value="20,10" />
+        <Style.Triggers>
+            <Trigger TargetType="Button" Property="IsEnabled" Value="False">
+                <Setter Property="BackgroundColor" Value="{StaticResource PetMachDisabledSurface}" />
+                <Setter Property="BorderColor" Value="{StaticResource PetMachDisabled}" />
+                <Setter Property="TextColor" Value="{StaticResource PetMachTextSecondary}" />
+                <Setter Property="Opacity" Value="0.72" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style
+        x:Key="PetMachPrimaryButtonStyle"
+        TargetType="Button"
+        BasedOn="{StaticResource PetMachButtonBaseStyle}">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachPrimary}" />
+        <Setter Property="BorderColor" Value="{StaticResource PetMachPrimary}" />
+        <Setter Property="BorderWidth" Value="{StaticResource PetMachBorderWidth}" />
+        <Setter Property="TextColor" Value="{StaticResource PetMachTextOnColor}" />
+    </Style>
+
+    <Style
+        x:Key="PetMachSecondaryButtonStyle"
+        TargetType="Button"
+        BasedOn="{StaticResource PetMachButtonBaseStyle}">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderColor" Value="{StaticResource PetMachSecondary}" />
+        <Setter Property="BorderWidth" Value="{StaticResource PetMachBorderWidth}" />
+        <Setter Property="TextColor" Value="{StaticResource PetMachSecondary}" />
+    </Style>
+
+    <Style
+        x:Key="PetMachGhostButtonStyle"
+        TargetType="Button"
+        BasedOn="{StaticResource PetMachButtonBaseStyle}">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderWidth" Value="0" />
+        <Setter Property="HeightRequest" Value="{StaticResource PetMachTouchTarget}" />
+        <Setter Property="Padding" Value="8,8" />
+        <Setter Property="TextColor" Value="{StaticResource PetMachSecondary}" />
+    </Style>
+
+    <Style
+        x:Key="PetMachDestructiveButtonStyle"
+        TargetType="Button"
+        BasedOn="{StaticResource PetMachButtonBaseStyle}">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderColor" Value="{StaticResource PetMachError}" />
+        <Setter Property="BorderWidth" Value="{StaticResource PetMachBorderWidth}" />
+        <Setter Property="TextColor" Value="{StaticResource PetMachError}" />
+    </Style>
+
+    <Style x:Key="PetMachInputContainerStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachSurface}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachInputPadding}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachBorder}" />
+        <Setter Property="StrokeThickness" Value="{StaticResource PetMachBorderWidth}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+    </Style>
+
+    <Style x:Key="PetMachInputEntryStyle" TargetType="Entry">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="HeightRequest" Value="{StaticResource PetMachInputHeight}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource PetMachPlaceholder}" />
+        <Setter Property="TextColor" Value="{StaticResource PetMachTextPrimary}" />
+    </Style>
+
+    <Style x:Key="PetMachCardStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachSurface}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachCardPadding}" />
+        <Setter Property="Shadow" Value="{StaticResource PetMachCardShadow}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachBorder}" />
+        <Setter Property="StrokeThickness" Value="{StaticResource PetMachBorderWidth}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 22" />
+    </Style>
+
+    <Style x:Key="PetMachStrongCardStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachSurfaceStrong}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachCardPadding}" />
+        <Setter Property="Shadow" Value="{StaticResource PetMachCardShadow}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachSurfaceStrong}" />
+        <Setter Property="StrokeThickness" Value="{StaticResource PetMachBorderWidth}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 22" />
+    </Style>
+
+    <Style x:Key="PetMachChipStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachSurfaceMuted}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachChipPadding}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachBorder}" />
+        <Setter Property="StrokeThickness" Value="{StaticResource PetMachBorderWidth}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+    </Style>
+
+    <Style x:Key="PetMachSelectedChipStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachPrimarySoft}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachChipPadding}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachPrimary}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+    </Style>
+
+    <Style x:Key="PetMachBadgeLabelStyle" TargetType="Label">
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{StaticResource PetMachSecondary}" />
+    </Style>
+
+    <Style x:Key="PetMachAvatarBorderStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachSecondarySoft}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachSurface}" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 36" />
+    </Style>
+
+    <Style x:Key="PetMachLoadingIndicatorStyle" TargetType="ActivityIndicator">
+        <Setter Property="Color" Value="{StaticResource PetMachPrimary}" />
+        <Setter Property="HeightRequest" Value="32" />
+        <Setter Property="WidthRequest" Value="32" />
+    </Style>
+
+    <Style x:Key="PetMachEmptyStateStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachSurfaceMuted}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachSpace24}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachBorder}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 22" />
+    </Style>
+
+    <Style x:Key="PetMachErrorStateStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachErrorSoft}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachSpace20}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachError}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+    </Style>
+
+    <Style x:Key="PetMachSuccessStateStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachSuccessSoft}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachSpace20}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachSuccess}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+    </Style>
+
+    <Style x:Key="PetMachWarningStateStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachWarningSoft}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachSpace20}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachWarning}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+    </Style>
+
+    <!-- Compatibility styles. -->
+    <Style x:Key="OutlineButton" TargetType="Button" BasedOn="{StaticResource PetMachSecondaryButtonStyle}" />
+    <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource PetMachGhostButtonStyle}" />
+</ResourceDictionary>

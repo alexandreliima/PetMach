@@ -3,143 +3,137 @@
     x:Class="PetMach.Mobile.LoginPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:components="clr-namespace:PetMach.Mobile.Components"
     Shell.NavBarIsVisible="False"
     Title="Entrar">
     <ScrollView>
-        <VerticalStackLayout Padding="30,54,30,30" Spacing="14">
-            <Image
-                HeightRequest="72"
-                HorizontalOptions="Center"
-                Source="petmatch_logo.svg"
-                WidthRequest="72" />
-            <Label
-                FontAttributes="Bold"
-                FontSize="36"
-                HorizontalTextAlignment="Center">
-                <Label.FormattedText>
-                    <FormattedString>
-                        <Span Text="Pet" TextColor="{StaticResource TextPrimary}" />
-                        <Span Text="Match" TextColor="{StaticResource Primary}" />
-                    </FormattedString>
-                </Label.FormattedText>
-            </Label>
-            <Label
-                FontSize="16"
-                HorizontalTextAlignment="Center"
-                Margin="0,-8,0,14"
-                Text="Faça login para continuar"
-                TextColor="{StaticResource TextSecondary}" />
+        <VerticalStackLayout
+            x:Name="LoginContent"
+            MaximumWidthRequest="520"
+            Padding="24,36,24,32"
+            Spacing="{StaticResource PetMachSpace20}">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource PetMachSpace12}">
+                <Border
+                    BackgroundColor="{StaticResource PetMachSurface}"
+                    HeightRequest="64"
+                    Padding="{StaticResource PetMachSpace8}"
+                    Stroke="{StaticResource PetMachPrimarySoft}"
+                    StrokeShape="RoundRectangle 22"
+                    StrokeThickness="2"
+                    WidthRequest="64">
+                    <Image
+                        SemanticProperties.Description="Logotipo PetMatch"
+                        Source="petmatch_logo.svg" />
+                </Border>
+                <components:SectionHeaderView
+                    Grid.Column="1"
+                    Eyebrow="BEM-VINDO DE VOLTA"
+                    Subtitle="Entre para continuar cuidando das suas conexões."
+                    Title="Acesse sua conta" />
+            </Grid>
 
-            <Label FontAttributes="Bold" Text="E-mail" />
-            <Border BackgroundColor="#FFFCF9" Padding="13,0" StrokeShape="RoundRectangle 12">
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                    <Label FontSize="18" Text="✉" TextColor="#9D9D99" VerticalTextAlignment="Center" />
-                    <Entry
-                        Grid.Column="1"
-                        BackgroundColor="Transparent"
-                        Keyboard="Email"
-                        Placeholder="seu@email.com"
-                        Text="{Binding Email}" />
-                </Grid>
+            <Border Style="{StaticResource PetMachCardStyle}">
+                <VerticalStackLayout Spacing="{StaticResource PetMachSpace12}">
+                    <VerticalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                        <Label Style="{StaticResource PetMachFieldLabelStyle}" Text="E-mail" />
+                        <Border Style="{StaticResource PetMachInputContainerStyle}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource PetMachSpace8}">
+                                <Label
+                                    FontSize="18"
+                                    SemanticProperties.Description="E-mail"
+                                    Text="✉"
+                                    TextColor="{StaticResource PetMachPlaceholder}"
+                                    VerticalTextAlignment="Center" />
+                                <Entry
+                                    Grid.Column="1"
+                                    AutomationId="LoginEmailEntry"
+                                    ClearButtonVisibility="WhileEditing"
+                                    Keyboard="Email"
+                                    Placeholder="seu@email.com"
+                                    ReturnType="Next"
+                                    SemanticProperties.Description="Digite seu e-mail"
+                                    Style="{StaticResource PetMachInputEntryStyle}"
+                                    Text="{Binding Email}" />
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                        <Label Style="{StaticResource PetMachFieldLabelStyle}" Text="Senha" />
+                        <Border Style="{StaticResource PetMachInputContainerStyle}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource PetMachSpace8}">
+                                <Label
+                                    FontSize="16"
+                                    SemanticProperties.Description="Senha"
+                                    Text="●"
+                                    TextColor="{StaticResource PetMachPlaceholder}"
+                                    VerticalTextAlignment="Center" />
+                                <Entry
+                                    Grid.Column="1"
+                                    AutomationId="LoginPasswordEntry"
+                                    IsPassword="True"
+                                    Placeholder="Sua senha"
+                                    ReturnType="Go"
+                                    SemanticProperties.Description="Digite sua senha"
+                                    Style="{StaticResource PetMachInputEntryStyle}"
+                                    Text="{Binding Password}" />
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <Button
+                        HorizontalOptions="End"
+                        SemanticProperties.Hint="Recuperação de senha ainda não disponível"
+                        Style="{StaticResource PetMachGhostButtonStyle}"
+                        Text="Esqueci minha senha" />
+
+                    <components:StateView
+                        Kind="Loading"
+                        Message="Validando seus dados com segurança."
+                        IsVisible="{Binding IsBusy}"
+                        Title="Entrando" />
+
+                    <components:StateView
+                        x:Name="LoginFeedback"
+                        Kind="Error"
+                        Message="{Binding StatusMessage}"
+                        IsVisible="False"
+                        Title="Não foi possível entrar" />
+
+                    <Button
+                        AutomationId="LoginButton"
+                        Command="{Binding LoginCommand}"
+                        SemanticProperties.Hint="Entra na sua conta PetMatch"
+                        Style="{StaticResource PetMachPrimaryButtonStyle}"
+                        Text="Entrar">
+                        <Button.Triggers>
+                            <DataTrigger Binding="{Binding IsBusy}" TargetType="Button" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </VerticalStackLayout>
             </Border>
 
-            <Label FontAttributes="Bold" Margin="0,6,0,0" Text="Senha" />
-            <Border BackgroundColor="#FFFCF9" Padding="13,0" StrokeShape="RoundRectangle 12">
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                    <Label FontSize="18" Text="▣" TextColor="#9D9D99" VerticalTextAlignment="Center" />
-                    <Entry
-                        Grid.Column="1"
-                        BackgroundColor="Transparent"
-                        IsPassword="True"
-                        Placeholder="••••••••"
-                        Text="{Binding Password}" />
-                </Grid>
-            </Border>
-
-            <Button
-                BackgroundColor="Transparent"
-                FontAttributes="None"
-                HeightRequest="38"
-                HorizontalOptions="End"
-                Padding="0"
-                Text="Esqueci minha senha"
-                TextColor="{StaticResource Teal}" />
-
-            <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="{StaticResource Danger}" />
-            <ActivityIndicator Color="{StaticResource Primary}" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-            <Button Command="{Binding LoginCommand}" Text="Entrar" />
-
-            <Grid Margin="0,8" ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
-                <BoxView HeightRequest="1" VerticalOptions="Center" Color="{StaticResource Border}" />
-                <Label Grid.Column="1" Text="ou" TextColor="{StaticResource TextSecondary}" />
-                <BoxView Grid.Column="2" HeightRequest="1" VerticalOptions="Center" Color="{StaticResource Border}" />
+            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="{StaticResource PetMachSpace12}">
+                <BoxView Color="{StaticResource PetMachDivider}" HeightRequest="1" VerticalOptions="Center" />
+                <Label Grid.Column="1" Style="{StaticResource PetMachCaptionStyle}" Text="ainda não tem uma conta?" />
+                <BoxView Grid.Column="2" Color="{StaticResource PetMachDivider}" HeightRequest="1" VerticalOptions="Center" />
             </Grid>
 
             <Button
-                Style="{StaticResource OutlineButton}"
+                AutomationId="OpenRegistrationButton"
                 Clicked="OpenRegistrationClicked"
+                SemanticProperties.Hint="Abre o cadastro de uma nova conta"
+                Style="{StaticResource PetMachSecondaryButtonStyle}"
                 Text="Criar conta" />
 
-            <Label
-                FontSize="13"
-                HorizontalTextAlignment="Center"
-                Margin="0,4,0,0"
-                Text="Entrar com"
-                TextColor="{StaticResource TextSecondary}" />
-            <Grid ColumnDefinitions="*,Auto,Auto,Auto,*" ColumnSpacing="18">
-                <Border
-                    Grid.Column="1"
-                    BackgroundColor="White"
-                    HeightRequest="52"
-                    Padding="0"
-                    StrokeShape="RoundRectangle 26"
-                    WidthRequest="52">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="22"
-                        HorizontalTextAlignment="Center"
-                        Text="G"
-                        TextColor="#4285F4"
-                        VerticalTextAlignment="Center" />
-                </Border>
-                <Border
-                    Grid.Column="2"
-                    BackgroundColor="White"
-                    HeightRequest="52"
-                    Padding="0"
-                    StrokeShape="RoundRectangle 26"
-                    WidthRequest="52">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="24"
-                        HorizontalTextAlignment="Center"
-                        Text="f"
-                        TextColor="#1877F2"
-                        VerticalTextAlignment="Center" />
-                </Border>
-                <Border
-                    Grid.Column="3"
-                    BackgroundColor="White"
-                    HeightRequest="52"
-                    Padding="0"
-                    StrokeShape="RoundRectangle 26"
-                    WidthRequest="52">
-                    <Label
-                        FontSize="22"
-                        HorizontalTextAlignment="Center"
-                        Text="●"
-                        TextColor="#111111"
-                        VerticalTextAlignment="Center" />
-                </Border>
-            </Grid>
-
-            <Label
-                FontSize="12"
-                HorizontalTextAlignment="Center"
-                LineHeight="1.2"
-                Margin="12,14,12,0"
-                Text="Ao continuar, você concorda com nossos Termos de Uso e Política de Privacidade."
-                TextColor="{StaticResource TextSecondary}" />
+            <Border HorizontalOptions="Center" Style="{StaticResource PetMachChipStyle}">
+                <HorizontalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                    <Label Text="✓" TextColor="{StaticResource PetMachSuccess}" />
+                    <Label Style="{StaticResource PetMachCaptionStyle}" Text="Sua sessão é protegida e seus dados são privados." />
+                </HorizontalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

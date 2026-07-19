@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <x:Double x:Key="PetMachSpace4">4</x:Double>
+    <x:Double x:Key="PetMachSpace8">8</x:Double>
+    <x:Double x:Key="PetMachSpace12">12</x:Double>
+    <x:Double x:Key="PetMachSpace16">16</x:Double>
+    <x:Double x:Key="PetMachSpace20">20</x:Double>
+    <x:Double x:Key="PetMachSpace24">24</x:Double>
+    <x:Double x:Key="PetMachSpace32">32</x:Double>
+
+    <x:Int32 x:Key="PetMachRadiusSmall">8</x:Int32>
+    <x:Int32 x:Key="PetMachRadiusMedium">14</x:Int32>
+    <x:Int32 x:Key="PetMachRadiusLarge">22</x:Int32>
+    <x:Int32 x:Key="PetMachRadiusPill">28</x:Int32>
+
+    <x:Double x:Key="PetMachButtonHeight">52</x:Double>
+    <x:Double x:Key="PetMachInputHeight">54</x:Double>
+    <x:Double x:Key="PetMachTouchTarget">48</x:Double>
+    <x:Double x:Key="PetMachBorderWidth">1</x:Double>
+    <x:Double x:Key="PetMachIconSmall">20</x:Double>
+    <x:Double x:Key="PetMachIconMedium">28</x:Double>
+    <x:Double x:Key="PetMachAvatarMedium">52</x:Double>
+    <x:Double x:Key="PetMachAvatarLarge">72</x:Double>
+
+    <Thickness x:Key="PetMachPagePadding">24,24,24,32</Thickness>
+    <Thickness x:Key="PetMachPagePaddingWide">28,32,28,32</Thickness>
+    <Thickness x:Key="PetMachCardPadding">20</Thickness>
+    <Thickness x:Key="PetMachInputPadding">14,0</Thickness>
+    <Thickness x:Key="PetMachChipPadding">12,6</Thickness>
+</ResourceDictionary>

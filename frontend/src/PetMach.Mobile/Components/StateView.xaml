@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="PetMach.Mobile.Components.StateView"
+    x:Name="Root"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Border x:Name="StateContainer" Style="{StaticResource PetMachEmptyStateStyle}">
+        <VerticalStackLayout HorizontalOptions="Center" Spacing="{StaticResource PetMachSpace8}">
+            <ActivityIndicator
+                x:Name="StateIndicator"
+                HorizontalOptions="Center"
+                IsRunning="False"
+                IsVisible="False"
+                Style="{StaticResource PetMachLoadingIndicatorStyle}" />
+            <Label
+                x:Name="StateIcon"
+                FontAttributes="Bold"
+                FontSize="28"
+                HorizontalTextAlignment="Center"
+                Text="○"
+                TextColor="{StaticResource PetMachSecondary}" />
+            <Label
+                HorizontalTextAlignment="Center"
+                Style="{StaticResource PetMachCardTitleStyle}"
+                Text="{Binding Title, Source={x:Reference Root}}" />
+            <Label
+                HorizontalTextAlignment="Center"
+                Style="{StaticResource PetMachBodySmallStyle}"
+                Text="{Binding Message, Source={x:Reference Root}}" />
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

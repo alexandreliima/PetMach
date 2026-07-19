@@ -1,25 +1,41 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="PetMach.Mobile.DogsPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Meus cães" BackgroundColor="{StaticResource Surface}">
-    <Grid Padding="24" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="16">
-        <Label FontAttributes="Bold" FontSize="30" Text="Meus cães" />
-        <Label Grid.Row="1" Text="Perfis cadastrados na sua conta." TextColor="#6B5E56" />
-        <CollectionView Grid.Row="2" ItemsSource="{Binding Dogs}" EmptyView="Nenhum cão cadastrado.">
+<ContentPage
+    x:Class="PetMach.Mobile.DogsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:components="clr-namespace:PetMach.Mobile.Components"
+    BackgroundColor="{StaticResource PetMachBackground}"
+    Title="Meus cães">
+    <Grid Padding="24" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="{StaticResource PetMachSpace16}">
+        <Label Style="{StaticResource PetMachPageTitleStyle}" Text="Meus cães" />
+        <Label Grid.Row="1" Style="{StaticResource PetMachBodyStyle}" Text="Perfis cadastrados na sua conta." />
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Dogs}">
+            <CollectionView.EmptyView>
+                <components:StateView
+                    Kind="Empty"
+                    Message="Cadastre seu primeiro pet para começar a criar conexões."
+                    Title="Nenhum pet cadastrado" />
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="0,0,0,12" BackgroundColor="White" Padding="18" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
-                        <VerticalStackLayout Spacing="5">
-                            <Label FontAttributes="Bold" FontSize="20" Text="{Binding Name}" />
-                            <Label Text="{Binding Breed}" TextColor="#6B5E56" />
-                            <Label FontSize="13" Text="{Binding Temperament}" TextColor="#7A6D65" />
+                    <Border Margin="0,0,0,12" Style="{StaticResource PetMachCardStyle}">
+                        <VerticalStackLayout Spacing="{StaticResource PetMachSpace4}">
+                            <Label Style="{StaticResource PetMachCardTitleStyle}" Text="{Binding Name}" />
+                            <Label Style="{StaticResource PetMachBodySmallStyle}" Text="{Binding Breed}" />
+                            <Label Style="{StaticResource PetMachCaptionStyle}" Text="{Binding Temperament}" />
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-        <ActivityIndicator Grid.Row="3" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-        <VerticalStackLayout Grid.Row="4" Spacing="10">
-            <Button Command="{Binding AddDogCommand}" CornerRadius="16" Text="Cadastrar novo cão" />
-            <Label HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="#7A3323" />
+        <ActivityIndicator
+            Grid.Row="3"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            Style="{StaticResource PetMachLoadingIndicatorStyle}" />
+        <VerticalStackLayout Grid.Row="4" Spacing="{StaticResource PetMachSpace8}">
+            <Button Command="{Binding AddDogCommand}" Style="{StaticResource PetMachPrimaryButtonStyle}" Text="Cadastrar novo pet" />
+            <Label HorizontalTextAlignment="Center" Style="{StaticResource PetMachErrorTextStyle}" Text="{Binding StatusMessage}" />
         </VerticalStackLayout>
     </Grid>
 </ContentPage>
