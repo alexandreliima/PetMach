@@ -2,6 +2,7 @@ using FluentAssertions;
 using PetMach.Mobile.Core.Home;
 using PetMach.Mobile.Core.Identity;
 using PetMach.Mobile.Core.Navigation;
+using PetMach.Mobile.Core.Settings;
 
 namespace PetMach.Mobile.Tests.Home;
 
@@ -20,6 +21,7 @@ public sealed class HomeViewModelTests
     [InlineData("reservations", "reservations")]
     [InlineData("partner-operations", "partner-operations")]
     [InlineData("adoption", "adoption")]
+    [InlineData("settings", SettingsRoutes.Settings)]
     public async Task FeatureCommandsShouldOpenTheExpectedRoute(string feature, string route)
     {
         Navigator navigator = new();
@@ -36,7 +38,8 @@ public sealed class HomeViewModelTests
         else if (feature == "partner-spaces") await viewModel.OpenPartnerSpacesCommand.ExecuteAsync(null);
         else if (feature == "reservations") await viewModel.OpenReservationsCommand.ExecuteAsync(null);
         else if (feature == "partner-operations") await viewModel.OpenPartnerOperationsCommand.ExecuteAsync(null);
-        else await viewModel.OpenAdoptionCommand.ExecuteAsync(null);
+        else if (feature == "adoption") await viewModel.OpenAdoptionCommand.ExecuteAsync(null);
+        else await viewModel.OpenSettingsCommand.ExecuteAsync(null);
 
         navigator.Route.Should().Be(route);
     }

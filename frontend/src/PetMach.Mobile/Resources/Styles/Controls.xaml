@@ -165,6 +165,15 @@
         <Setter Property="StrokeShape" Value="RoundRectangle 18" />
     </Style>
 
+    <Style x:Key="PetMachSettingsRowStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource PetMachSurface}" />
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource PetMachTouchTarget}" />
+        <Setter Property="Padding" Value="{StaticResource PetMachSpace16}" />
+        <Setter Property="Stroke" Value="{StaticResource PetMachBorder}" />
+        <Setter Property="StrokeThickness" Value="{StaticResource PetMachBorderWidth}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+    </Style>
+
     <!-- Compatibility styles. -->
     <Style x:Key="OutlineButton" TargetType="Button" BasedOn="{StaticResource PetMachSecondaryButtonStyle}" />
     <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource PetMachGhostButtonStyle}" />

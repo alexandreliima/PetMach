@@ -2,9 +2,11 @@ using PetMach.Mobile.Core.Features;
 using PetMach.Mobile.Core.Home;
 using PetMach.Mobile.Core.Identity;
 using PetMach.Mobile.Core.Navigation;
+using PetMach.Mobile.Core.Settings;
 using PetMach.Mobile.Features;
 using PetMach.Mobile.Identity;
 using PetMach.Mobile.Navigation;
+using PetMach.Mobile.Settings;
 
 namespace PetMach.Mobile;
 
@@ -24,6 +26,7 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegisterPage>();
         builder.Services.AddTransient<AboutPage>();
+        builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<TutorProfilePage>();
         builder.Services.AddTransient<DogsPage>();
         builder.Services.AddTransient<DogFormPage>();
@@ -45,6 +48,8 @@ public static class MauiProgram
         builder.Services.AddTransient<WelcomeViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
+        builder.Services.AddTransient<AboutViewModel>();
+        builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddTransient<HomeViewModel>();
         builder.Services.AddTransient<TutorProfileViewModel>();
         builder.Services.AddTransient<DogsViewModel>();
@@ -77,6 +82,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppStartupCoordinator>();
         builder.Services.AddSingleton<SessionLifecycleCoordinator>();
         builder.Services.AddSingleton<ILogoutCoordinator, LogoutCoordinator>();
+        builder.Services.AddSingleton<IAppInformationProvider, MauiAppInformationProvider>();
+        builder.Services.AddSingleton<IConfirmationService, MauiConfirmationService>();
         builder.Services.AddSingleton<IPetMachApiClient, PetMachApiClient>();
         builder.Services.AddSingleton<IDeviceFilePicker, DeviceFilePicker>();
 

@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using PetMach.Mobile.Core.Identity;
 using PetMach.Mobile.Core.Navigation;
+using PetMach.Mobile.Core.Settings;
 
 namespace PetMach.Mobile.Core.Home;
 
@@ -43,6 +44,9 @@ public sealed partial class HomeViewModel(
 
     [RelayCommand]
     private Task OpenAdoptionAsync() => navigator.GoToAsync("adoption");
+
+    [RelayCommand]
+    private Task OpenSettingsAsync() => navigator.GoToAsync(SettingsRoutes.Settings);
 
     [RelayCommand]
     private Task LogoutAsync(CancellationToken cancellationToken) =>

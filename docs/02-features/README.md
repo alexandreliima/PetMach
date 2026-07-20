@@ -16,6 +16,7 @@ related_documents:
 Planejado:
 
 - Feature inventory and maturity matrix — **Planned**
+- [PTM-009A — Settings Shell, About and Logout](user-settings.md) — **Working Draft**
 - Identity and session — **Planned**
 - Tutor and pet profiles — **Planned**
 - Health — **Planned**
@@ -27,4 +28,3 @@ Planejado:
 
 Cada documento deverá separar comportamento implementado, parcial,
 demonstrativo e planejado.
-

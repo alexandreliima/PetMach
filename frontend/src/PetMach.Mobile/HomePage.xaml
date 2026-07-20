@@ -309,6 +309,12 @@
                     <Label Style="{StaticResource PetMachSectionTitleStyle}" Text="Conta e serviços" />
                     <Button Command="{Binding OpenConversationsCommand}" Style="{StaticResource PetMachSecondaryButtonStyle}" Text="Conversas" />
                     <Button Command="{Binding OpenTutorProfileCommand}" Style="{StaticResource PetMachSecondaryButtonStyle}" Text="Perfil do tutor" />
+                    <Button
+                        AutomationId="HomeSettingsButton"
+                        Command="{Binding OpenSettingsCommand}"
+                        SemanticProperties.Hint="Abre as configurações da conta e do aplicativo"
+                        Style="{StaticResource PetMachSecondaryButtonStyle}"
+                        Text="Configurações" />
                     <Button Command="{Binding OpenPartnerOperationsCommand}" Style="{StaticResource PetMachGhostButtonStyle}" Text="Área do parceiro" />
                     <Button
                         AutomationId="HomeLogoutButton"

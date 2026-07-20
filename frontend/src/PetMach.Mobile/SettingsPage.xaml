@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="PetMach.Mobile.SettingsPage"
+    x:Name="RootPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:components="clr-namespace:PetMach.Mobile.Components"
+    xmlns:settings="clr-namespace:PetMach.Mobile.Core.Settings;assembly=PetMach.Mobile.Core"
+    Title="Configurações">
+    <Grid>
+        <components:StateView
+            Margin="{StaticResource PetMachPagePadding}"
+            IsVisible="{Binding IsLoading}"
+            Kind="Loading"
+            Message="Organizando suas opções de conta e aplicativo."
+            SemanticProperties.Description="Carregando configurações"
+            Title="Carregando configurações"
+            VerticalOptions="Center" />
+
+        <ScrollView IsVisible="{Binding ShowContent}">
+            <VerticalStackLayout
+                Padding="{StaticResource PetMachPagePadding}"
+                Spacing="{StaticResource PetMachSpace24}">
+                <components:SectionHeaderView
+                    Eyebrow="SUA CONTA"
+                    Subtitle="Encontre informações, preferências e opções de sessão em um só lugar."
+                    Title="Configurações" />
+
+                <VerticalStackLayout
+                    BindableLayout.ItemsSource="{Binding Sections}"
+                    Spacing="{StaticResource PetMachSpace24}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="settings:SettingsSection">
+                            <VerticalStackLayout Spacing="{StaticResource PetMachSpace12}">
+                                <Label
+                                    SemanticProperties.HeadingLevel="Level2"
+                                    Style="{StaticResource PetMachSectionTitleStyle}"
+                                    Text="{Binding Title}" />
+                                <VerticalStackLayout
+                                    BindableLayout.ItemsSource="{Binding Items}"
+                                    Spacing="{StaticResource PetMachSpace8}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="settings:SettingsSectionItem">
+                                            <Border
+                                                AutomationId="{Binding Id, StringFormat='SettingsItem_{0}'}"
+                                                SemanticProperties.Description="{Binding AccessibilityDescription}"
+                                                Style="{StaticResource PetMachSettingsRowStyle}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenItemCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <Grid
+                                                    ColumnDefinitions="*,Auto"
+                                                    ColumnSpacing="{StaticResource PetMachSpace12}">
+                                                    <VerticalStackLayout Spacing="{StaticResource PetMachSpace4}">
+                                                        <Label
+                                                            Style="{StaticResource PetMachCardTitleStyle}"
+                                                            Text="{Binding Title}" />
+                                                        <Label
+                                                            Style="{StaticResource PetMachBodySmallStyle}"
+                                                            Text="{Binding Description}" />
+                                                    </VerticalStackLayout>
+                                                    <Border
+                                                        Grid.Column="1"
+                                                        IsVisible="{Binding HasBadge}"
+                                                        Style="{StaticResource PetMachChipStyle}"
+                                                        VerticalOptions="Center">
+                                                        <Label
+                                                            Style="{StaticResource PetMachBadgeLabelStyle}"
+                                                            Text="{Binding BadgeText}" />
+                                                    </Border>
+                                                    <Label
+                                                        Grid.Column="1"
+                                                        IsVisible="{Binding ShowsChevron}"
+                                                        SemanticProperties.Description="Abrir opção"
+                                                        Style="{StaticResource PetMachSectionTitleStyle}"
+                                                        Text="›"
+                                                        VerticalOptions="Center" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="{StaticResource PetMachSpace12}">
+                    <Label
+                        SemanticProperties.HeadingLevel="Level2"
+                        Style="{StaticResource PetMachSectionTitleStyle}"
+                        Text="Sessão" />
+                    <Button
+                        AutomationId="SettingsLogoutButton"
+                        Command="{Binding LogoutCommand}"
+                        SemanticProperties.Description="Sair da conta"
+                        SemanticProperties.Hint="Solicita confirmação e encerra sua sessão no PetMatch"
+                        Style="{StaticResource PetMachDestructiveButtonStyle}"
+                        Text="{Binding LogoutButtonText}" />
+                    <ActivityIndicator
+                        AutomationId="SettingsLogoutProgress"
+                        IsRunning="{Binding IsLoggingOut}"
+                        IsVisible="{Binding IsLoggingOut}"
+                        SemanticProperties.Description="Saindo da conta" />
+                </VerticalStackLayout>
+
+                <components:StateView
+                    AutomationId="SettingsErrorState"
+                    IsVisible="{Binding HasError}"
+                    Kind="Error"
+                    Message="{Binding ErrorMessage}"
+                    SemanticProperties.Description="{Binding ErrorMessage}"
+                    Title="Não foi possível concluir a ação" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

@@ -3,63 +3,83 @@
     x:Class="PetMach.Mobile.AboutPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    BackgroundColor="{StaticResource Surface}"
-    Title="Conheça o PetMach">
+    xmlns:components="clr-namespace:PetMach.Mobile.Components"
+    Title="Sobre o PetMatch">
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="18">
-            <Label
-                FontAttributes="Bold"
-                FontSize="14"
-                Text="CONHEÇA O PETMACH"
-                TextColor="{StaticResource Primary}" />
-            <Label
-                FontAttributes="Bold"
-                FontSize="34"
-                Text="Boas experiências começam com cuidado."
-                TextColor="{StaticResource TextPrimary}" />
-            <Label
-                FontSize="17"
-                Text="Uma plataforma para cães e tutores encontrarem companhias, passeios e serviços com mais segurança."
-                TextColor="#6B5E56" />
+        <VerticalStackLayout
+            Padding="{StaticResource PetMachPagePadding}"
+            Spacing="{StaticResource PetMachSpace20}">
+            <components:SectionHeaderView
+                Eyebrow="SOBRE O PETMATCH"
+                Subtitle="Uma plataforma para pets e tutores encontrarem companhia, passeios e serviços com mais segurança."
+                Title="Boas experiências começam com cuidado." />
 
-            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
-                <VerticalStackLayout Spacing="7">
-                    <Label FontAttributes="Bold" FontSize="20" Text="Descoberta compatível" />
-                    <Label Text="Encontre cães considerando porte, energia, temperamento e objetivos de socialização." TextColor="#6B5E56" />
-                </VerticalStackLayout>
-            </Border>
-            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
-                <VerticalStackLayout Spacing="7">
-                    <Label FontAttributes="Bold" FontSize="20" Text="Conexões com consentimento" />
-                    <Label Text="A conversa será liberada somente quando os dois tutores demonstrarem interesse." TextColor="#6B5E56" />
-                </VerticalStackLayout>
-            </Border>
-            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
-                <VerticalStackLayout Spacing="7">
-                    <Label FontAttributes="Bold" FontSize="20" Text="Saúde organizada" />
-                    <Label Text="Registre vacinas e vermífugos sem tornar informações sensíveis públicas." TextColor="#6B5E56" />
-                </VerticalStackLayout>
-            </Border>
-            <Border BackgroundColor="White" Padding="20" Stroke="#E7D8CD" StrokeShape="RoundRectangle 18">
-                <VerticalStackLayout Spacing="7">
-                    <Label FontAttributes="Bold" FontSize="20" Text="Encontros e parceiros" />
-                    <Label Text="O PetMach está sendo preparado para encontros em espaços parceiros e reservas seguras." TextColor="#6B5E56" />
+            <Border Style="{StaticResource PetMachStrongCardStyle}">
+                <VerticalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                    <Label
+                        AutomationId="AboutAppName"
+                        Style="{StaticResource PetMachCardTitleStyle}"
+                        Text="{Binding AppName}"
+                        TextColor="{StaticResource PetMachTextOnColor}" />
+                    <Label
+                        AutomationId="AboutVersion"
+                        SemanticProperties.Description="{Binding VersionDescription}"
+                        Style="{StaticResource PetMachBodySmallStyle}"
+                        Text="{Binding VersionDescription}"
+                        TextColor="{StaticResource PetMachTextOnStrong}" />
+                    <Label
+                        Style="{StaticResource PetMachCaptionStyle}"
+                        Text="Informações obtidas diretamente deste aplicativo."
+                        TextColor="{StaticResource PetMachTextOnStrong}" />
                 </VerticalStackLayout>
             </Border>
 
-            <Border BackgroundColor="#FFF0E8" Padding="18" Stroke="#F3B29F" StrokeShape="RoundRectangle 16">
-                <Label Text="Sua localização exata e os dados privados de saúde nunca são exibidos publicamente." TextColor="#7A3323" />
+            <Border Style="{StaticResource PetMachCardStyle}">
+                <VerticalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                    <Label Style="{StaticResource PetMachCardTitleStyle}" Text="Descoberta compatível" />
+                    <Label Style="{StaticResource PetMachBodySmallStyle}" Text="Encontre pets considerando porte, energia, temperamento e objetivos de socialização." />
+                </VerticalStackLayout>
             </Border>
-            <Button Command="{Binding OpenRegistrationCommand}" CornerRadius="18" HeightRequest="56" Text="Criar minha conta" />
-            <Button
-                BackgroundColor="Transparent"
-                BorderColor="{StaticResource Primary}"
-                BorderWidth="1"
-                Command="{Binding OpenLoginCommand}"
-                CornerRadius="18"
-                HeightRequest="56"
-                Text="Já tenho uma conta"
-                TextColor="{StaticResource Primary}" />
+            <Border Style="{StaticResource PetMachCardStyle}">
+                <VerticalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                    <Label Style="{StaticResource PetMachCardTitleStyle}" Text="Conexões com consentimento" />
+                    <Label Style="{StaticResource PetMachBodySmallStyle}" Text="A conversa é liberada quando os dois tutores demonstram interesse." />
+                </VerticalStackLayout>
+            </Border>
+            <Border Style="{StaticResource PetMachCardStyle}">
+                <VerticalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                    <Label Style="{StaticResource PetMachCardTitleStyle}" Text="Saúde organizada" />
+                    <Label Style="{StaticResource PetMachBodySmallStyle}" Text="Registre vacinas e cuidados sem tornar informações sensíveis públicas." />
+                </VerticalStackLayout>
+            </Border>
+            <Border Style="{StaticResource PetMachCardStyle}">
+                <VerticalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                    <Label Style="{StaticResource PetMachCardTitleStyle}" Text="Encontros e parceiros" />
+                    <Label Style="{StaticResource PetMachBodySmallStyle}" Text="Organize encontros e encontre espaços parceiros para momentos especiais." />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource PetMachWarningStateStyle}">
+                <Label
+                    Style="{StaticResource PetMachBodySmallStyle}"
+                    Text="Sua localização exata e os dados privados de saúde não são exibidos publicamente." />
+            </Border>
+            <VerticalStackLayout
+                IsVisible="{Binding ShowPublicActions}"
+                Spacing="{StaticResource PetMachSpace12}">
+                <Button
+                    AutomationId="AboutCreateAccountButton"
+                    Command="{Binding OpenRegistrationCommand}"
+                    SemanticProperties.Hint="Abre o cadastro de uma nova conta"
+                    Style="{StaticResource PetMachPrimaryButtonStyle}"
+                    Text="Criar minha conta" />
+                <Button
+                    AutomationId="AboutLoginButton"
+                    Command="{Binding OpenLoginCommand}"
+                    SemanticProperties.Hint="Abre a tela de login"
+                    Style="{StaticResource PetMachSecondaryButtonStyle}"
+                    Text="Já tenho uma conta" />
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

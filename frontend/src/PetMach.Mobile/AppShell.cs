@@ -1,3 +1,5 @@
+using PetMach.Mobile.Core.Settings;
+
 namespace PetMach.Mobile;
 
 public sealed class AppShell : Shell
@@ -61,6 +63,17 @@ public sealed class AppShell : Shell
             Routing.RegisterRoute("reservations", typeof(ReservationsPage));
             Routing.RegisterRoute("partner-operations", typeof(PartnerOperationsPage));
             Routing.RegisterRoute("adoption", typeof(AdoptionPage));
+            foreach (string route in SettingsRoutes.ShellRoutes)
+            {
+                Type pageType = route switch
+                {
+                    SettingsRoutes.Settings => typeof(SettingsPage),
+                    SettingsRoutes.About => typeof(AboutPage),
+                    _ => throw new InvalidOperationException(
+                        $"Rota de configurações não mapeada: {route}"),
+                };
+                Routing.RegisterRoute(route, pageType);
+            }
         }
     }
 }

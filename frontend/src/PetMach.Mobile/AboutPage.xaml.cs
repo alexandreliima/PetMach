@@ -1,12 +1,19 @@
-using PetMach.Mobile.Core.Identity;
+using PetMach.Mobile.Core.Settings;
 
 namespace PetMach.Mobile;
 
-public partial class AboutPage : ContentPage
+public partial class AboutPage : ContentPage, IQueryAttributable
 {
-    public AboutPage(WelcomeViewModel viewModel)
+    private readonly AboutViewModel viewModel;
+
+    public AboutPage(AboutViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = viewModel;
+        BindingContext = this.viewModel = viewModel;
     }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query) =>
+        viewModel.ApplySource(query.TryGetValue("source", out object? source)
+            ? source?.ToString()
+            : null);
 }
