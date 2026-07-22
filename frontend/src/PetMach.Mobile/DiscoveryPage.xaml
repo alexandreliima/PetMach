@@ -1,183 +1,350 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="PetMach.Mobile.DiscoveryPage"
+    x:Name="RootPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:components="clr-namespace:PetMach.Mobile.Components"
+    BackgroundColor="{StaticResource PetMachBackground}"
     Shell.NavBarIsVisible="False"
     Title="Descobrir">
-    <Grid Padding="18,18,18,8" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="10">
+    <Grid
+        Padding="{StaticResource PetMachPagePadding}"
+        RowDefinitions="Auto,Auto,*,Auto,Auto"
+        RowSpacing="{StaticResource PetMachSpace12}">
         <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
-            <HorizontalStackLayout Spacing="8">
-                <Image HeightRequest="36" Source="petmatch_logo.svg" WidthRequest="36" />
-                <Label FontAttributes="Bold" FontSize="24" VerticalTextAlignment="Center">
+            <HorizontalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                <Image
+                    HeightRequest="{StaticResource PetMachIconMedium}"
+                    SemanticProperties.Description="Logotipo PetMatch"
+                    Source="petmatch_logo.svg"
+                    WidthRequest="{StaticResource PetMachIconMedium}" />
+                <Label
+                    SemanticProperties.HeadingLevel="Level1"
+                    Style="{StaticResource PetMachPageTitleStyle}"
+                    VerticalTextAlignment="Center">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="Pet" TextColor="{StaticResource TextPrimary}" />
-                            <Span Text="Match" TextColor="{StaticResource Primary}" />
+                            <Span Text="Pet" />
+                            <Span Text="Match" TextColor="{StaticResource PetMachPrimary}" />
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
             </HorizontalStackLayout>
             <Button
                 Grid.Column="1"
-                BackgroundColor="{StaticResource SurfaceCard}"
-                BorderColor="{StaticResource Border}"
-                BorderWidth="1"
+                AutomationId="DiscoveryFiltersButton"
                 Command="{Binding ToggleFiltersCommand}"
-                CornerRadius="22"
-                FontAttributes="None"
-                FontSize="20"
-                HeightRequest="44"
-                Padding="0"
-                Text="☷"
-                TextColor="{StaticResource TextPrimary}"
-                WidthRequest="44" />
+                SemanticProperties.Description="Filtros da descoberta"
+                SemanticProperties.Hint="Mostra ou oculta os filtros disponíveis"
+                Style="{StaticResource PetMachGhostButtonStyle}"
+                Text="Filtros" />
         </Grid>
 
-        <VerticalStackLayout Grid.Row="1" Spacing="8">
-            <Picker
-                ItemDisplayBinding="{Binding Name}"
-                ItemsSource="{Binding MyDogs}"
-                SelectedItem="{Binding SelectedDog}"
-                Title="Escolha seu pet para descobrir" />
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="{StaticResource PetMachSpace12}">
+            <VerticalStackLayout Spacing="{StaticResource PetMachSpace4}">
+                <Label
+                    Style="{StaticResource PetMachFieldLabelStyle}"
+                    Text="Pet de origem" />
+                <Picker
+                    x:Name="SourceDogPicker"
+                    AutomationId="DiscoverySourceDogPicker"
+                    ItemDisplayBinding="{Binding Name}"
+                    ItemsSource="{Binding MyDogs}"
+                    SelectedIndexChanged="SourceDogChanged"
+                    SelectedItem="{Binding SelectedDog, Mode=OneWay}"
+                    SemanticProperties.Description="Pet selecionado para descobrir novos amigos"
+                    SemanticProperties.Hint="Trocar o pet reinicia as sugestões"
+                    Title="Escolha seu pet para descobrir" />
+            </VerticalStackLayout>
+
             <Border
-                BackgroundColor="{StaticResource SurfaceCard}"
+                AutomationId="DiscoveryFiltersPanel"
                 IsVisible="{Binding ShowFilters}"
-                Padding="14"
-                StrokeShape="RoundRectangle 18">
-                <VerticalStackLayout Spacing="9">
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <Entry Placeholder="Raça" Text="{Binding BreedFilter}" />
-                        <Picker Grid.Column="1" ItemsSource="{Binding SizeOptions}" SelectedItem="{Binding SizeFilter}" Title="Porte" />
+                Style="{StaticResource PetMachCardStyle}">
+                <VerticalStackLayout Spacing="{StaticResource PetMachSpace12}">
+                    <Label
+                        SemanticProperties.HeadingLevel="Level2"
+                        Style="{StaticResource PetMachSectionTitleStyle}"
+                        Text="Filtros" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource PetMachSpace8}">
+                        <Entry
+                            AutomationId="DiscoveryBreedFilter"
+                            Placeholder="Raça"
+                            SemanticProperties.Description="Filtrar por raça"
+                            Text="{Binding BreedFilter}" />
+                        <Picker
+                            Grid.Column="1"
+                            AutomationId="DiscoverySizeFilter"
+                            ItemsSource="{Binding SizeOptions}"
+                            SelectedItem="{Binding SizeFilter}"
+                            SemanticProperties.Description="Filtrar por porte"
+                            Title="Porte" />
                     </Grid>
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <Picker ItemsSource="{Binding SexOptions}" SelectedItem="{Binding SexFilter}" Title="Sexo" />
-                        <Picker Grid.Column="1" ItemsSource="{Binding EnergyOptions}" SelectedItem="{Binding EnergyLevelFilter}" Title="Energia" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource PetMachSpace8}">
+                        <Picker
+                            AutomationId="DiscoverySexFilter"
+                            ItemsSource="{Binding SexOptions}"
+                            SelectedItem="{Binding SexFilter}"
+                            SemanticProperties.Description="Filtrar por sexo"
+                            Title="Sexo" />
+                        <Picker
+                            Grid.Column="1"
+                            AutomationId="DiscoveryEnergyFilter"
+                            ItemsSource="{Binding EnergyOptions}"
+                            SelectedItem="{Binding EnergyLevelFilter}"
+                            SemanticProperties.Description="Filtrar por nível de energia"
+                            Title="Energia" />
                     </Grid>
-                    <Picker ItemsSource="{Binding GoalOptions}" SelectedItem="{Binding GoalFilter}" Title="Objetivo" />
-                    <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="6">
-                        <Label FontSize="12" Text="Castrado" VerticalTextAlignment="Center" />
-                        <Switch Grid.Column="1" IsToggled="{Binding OnlyNeutered}" />
-                        <Label Grid.Column="2" FontSize="12" Text="Vacinação em dia" VerticalTextAlignment="Center" />
-                        <Switch Grid.Column="3" IsToggled="{Binding OnlyVaccinated}" />
+                    <Picker
+                        AutomationId="DiscoveryGoalFilter"
+                        ItemsSource="{Binding GoalOptions}"
+                        SelectedItem="{Binding GoalFilter}"
+                        SemanticProperties.Description="Filtrar por objetivo"
+                        Title="Objetivo" />
+                    <Grid
+                        ColumnDefinitions="*,Auto,*,Auto"
+                        ColumnSpacing="{StaticResource PetMachSpace8}">
+                        <Label
+                            Style="{StaticResource PetMachBodySmallStyle}"
+                            Text="Castrado"
+                            VerticalTextAlignment="Center" />
+                        <Switch
+                            Grid.Column="1"
+                            AutomationId="DiscoveryNeuteredFilter"
+                            IsToggled="{Binding OnlyNeutered}"
+                            SemanticProperties.Description="Mostrar somente pets castrados" />
+                        <Label
+                            Grid.Column="2"
+                            Style="{StaticResource PetMachBodySmallStyle}"
+                            Text="Vacinação em dia"
+                            VerticalTextAlignment="Center" />
+                        <Switch
+                            Grid.Column="3"
+                            AutomationId="DiscoveryVaccinationFilter"
+                            IsToggled="{Binding OnlyVaccinated}"
+                            SemanticProperties.Description="Mostrar somente pets com vacinação em dia" />
                     </Grid>
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <Button Command="{Binding RefreshCommand}" Text="Aplicar filtros" />
-                        <Button Grid.Column="1" Command="{Binding ClearFiltersCommand}" Style="{StaticResource OutlineButton}" Text="Limpar" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource PetMachSpace8}">
+                        <Button
+                            AutomationId="DiscoveryApplyFiltersButton"
+                            Command="{Binding RefreshCommand}"
+                            SemanticProperties.Hint="Recarrega as sugestões com os filtros selecionados"
+                            Style="{StaticResource PetMachPrimaryButtonStyle}"
+                            Text="Aplicar filtros" />
+                        <Button
+                            Grid.Column="1"
+                            AutomationId="DiscoveryClearFiltersButton"
+                            Command="{Binding ClearFiltersCommand}"
+                            SemanticProperties.Hint="Remove todos os filtros e recarrega as sugestões"
+                            Style="{StaticResource PetMachSecondaryButtonStyle}"
+                            Text="Limpar filtros" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>
 
+        <components:StateView
+            Grid.Row="2"
+            AutomationId="DiscoveryInitialState"
+            IsVisible="{Binding IsInitialState}"
+            Kind="Loading"
+            Message="Preparando a descoberta para o pet selecionado."
+            SemanticProperties.Description="Preparando a descoberta"
+            Title="Preparando descoberta"
+            VerticalOptions="Center" />
+
+        <components:StateView
+            Grid.Row="2"
+            AutomationId="DiscoveryLoadingState"
+            IsVisible="{Binding IsLoadingState}"
+            Kind="Loading"
+            Message="Buscando novos amigos com os critérios selecionados."
+            SemanticProperties.Description="Carregando sugestões de pets"
+            Title="Procurando novos pets"
+            VerticalOptions="Center" />
+
+        <VerticalStackLayout
+            Grid.Row="2"
+            IsVisible="{Binding IsEmptyState}"
+            Spacing="{StaticResource PetMachSpace16}"
+            VerticalOptions="Center">
+            <components:StateView
+                AutomationId="DiscoveryEmptyState"
+                Kind="Empty"
+                Message="{Binding EmptyMessage}"
+                SemanticProperties.Description="{Binding EmptyMessage}"
+                Title="Nenhuma sugestão agora" />
+            <Button
+                AutomationId="DiscoveryEmptyClearFiltersButton"
+                Command="{Binding ClearFiltersCommand}"
+                IsVisible="{Binding HasActiveFilters}"
+                SemanticProperties.Hint="Remove os filtros e procura novamente"
+                Style="{StaticResource PetMachSecondaryButtonStyle}"
+                Text="Limpar filtros" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout
+            Grid.Row="2"
+            IsVisible="{Binding IsErrorState}"
+            Spacing="{StaticResource PetMachSpace16}"
+            VerticalOptions="Center">
+            <components:StateView
+                AutomationId="DiscoveryErrorState"
+                Kind="Error"
+                Message="{Binding ErrorMessage}"
+                SemanticProperties.Description="{Binding ErrorMessage}"
+                Title="Não foi possível carregar" />
+            <Button
+                AutomationId="DiscoveryRetryButton"
+                Command="{Binding RetryCommand}"
+                SemanticProperties.Hint="Tenta carregar as sugestões novamente"
+                Style="{StaticResource PetMachPrimaryButtonStyle}"
+                Text="Tentar novamente" />
+        </VerticalStackLayout>
+
         <CollectionView
             Grid.Row="2"
-            EmptyView="Nenhum animal disponível na rede agora."
+            AutomationId="DiscoveryCandidates"
+            IsVisible="{Binding IsContentState}"
             ItemsSource="{Binding Candidates}"
             RemainingItemsThreshold="2"
-            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
+            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+            SemanticProperties.Description="Sugestões de pets disponíveis">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <VerticalStackLayout Margin="0,0,0,18" Spacing="12">
+                    <VerticalStackLayout
+                        Margin="{StaticResource PetMachSpace8}"
+                        Spacing="{StaticResource PetMachSpace12}">
                         <Border
-                            BackgroundColor="#D9CEC3"
+                            BackgroundColor="{StaticResource PetMachSurfaceMuted}"
                             HeightRequest="470"
+                            Padding="0"
                             StrokeThickness="0"
                             StrokeShape="RoundRectangle 28">
                             <Grid>
                                 <Image
                                     Aspect="AspectFill"
+                                    SemanticProperties.Description="{Binding Name, StringFormat='Foto principal de {0}'}"
                                     Source="{Binding PrimaryPhotoUrl, TargetNullValue=petmach_welcome_dogs.png}" />
-                                <BoxView VerticalOptions="End" HeightRequest="210">
-                                    <BoxView.Background>
-                                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                            <GradientStop Offset="0" Color="#00123C38" />
-                                            <GradientStop Offset="1" Color="#D9123C38" />
-                                        </LinearGradientBrush>
-                                    </BoxView.Background>
-                                </BoxView>
+                                <BoxView
+                                    BackgroundColor="{StaticResource PetMachSurfaceStrong}"
+                                    HeightRequest="210"
+                                    Opacity="0.86"
+                                    VerticalOptions="End" />
                                 <Border
-                                    Margin="14"
-                                    BackgroundColor="#EFFFFFFF"
+                                    Margin="{StaticResource PetMachSpace16}"
+                                    BackgroundColor="{StaticResource PetMachSurface}"
                                     HorizontalOptions="Start"
-                                    Padding="10,6"
+                                    Padding="{StaticResource PetMachChipPadding}"
                                     StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 12"
+                                    StrokeShape="RoundRectangle 18"
                                     VerticalOptions="Start">
-                                    <Label FontAttributes="Bold" FontSize="12" Text="★ Novo por aqui" TextColor="{StaticResource Primary}" />
+                                    <Label
+                                        Style="{StaticResource PetMachBadgeLabelStyle}"
+                                        Text="Novo por aqui"
+                                        TextColor="{StaticResource PetMachPrimary}" />
                                 </Border>
                                 <VerticalStackLayout
-                                    Margin="20"
-                                    Spacing="5"
+                                    Margin="{StaticResource PetMachSpace20}"
+                                    Spacing="{StaticResource PetMachSpace4}"
                                     VerticalOptions="End">
-                                    <Label FontAttributes="Bold" FontSize="34" Text="{Binding Name}" TextColor="White" />
-                                    <Label FontSize="17" Text="{Binding Breed}" TextColor="White" />
-                                    <Label FontSize="14" Text="{Binding Region, StringFormat='⌖  {0}'}" TextColor="White" />
-                                    <HorizontalStackLayout Spacing="7">
-                                        <Border BackgroundColor="#B8123C38" Padding="10,5" StrokeThickness="0" StrokeShape="RoundRectangle 12">
-                                            <Label FontSize="12" Text="{Binding Temperament}" TextColor="White" />
+                                    <Label
+                                        SemanticProperties.HeadingLevel="Level2"
+                                        Style="{StaticResource PetMachDisplayStyle}"
+                                        Text="{Binding Name}"
+                                        TextColor="{StaticResource PetMachTextOnColor}" />
+                                    <Label
+                                        Style="{StaticResource PetMachBodyStyle}"
+                                        Text="{Binding Breed}"
+                                        TextColor="{StaticResource PetMachTextOnStrong}" />
+                                    <Label
+                                        Style="{StaticResource PetMachBodySmallStyle}"
+                                        Text="{Binding Region, StringFormat='Região: {0}'}"
+                                        TextColor="{StaticResource PetMachTextOnStrong}" />
+                                    <HorizontalStackLayout Spacing="{StaticResource PetMachSpace8}">
+                                        <Border Style="{StaticResource PetMachChipStyle}">
+                                            <Label
+                                                Style="{StaticResource PetMachBadgeLabelStyle}"
+                                                Text="{Binding Temperament}" />
                                         </Border>
-                                        <Border BackgroundColor="#B82D8B7D" Padding="10,5" StrokeThickness="0" StrokeShape="RoundRectangle 12">
-                                            <Label FontSize="12" Text="✓ Vacinado" TextColor="White" />
-                                            <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding VaccinationUpToDate}" Value="False">
-                                                    <Setter Property="IsVisible" Value="False" />
-                                                </DataTrigger>
-                                            </Border.Triggers>
+                                        <Border
+                                            IsVisible="{Binding VaccinationUpToDate}"
+                                            Style="{StaticResource PetMachSelectedChipStyle}">
+                                            <Label
+                                                Style="{StaticResource PetMachBadgeLabelStyle}"
+                                                Text="Vacinação em dia"
+                                                TextColor="{StaticResource PetMachPrimary}" />
                                         </Border>
                                     </HorizontalStackLayout>
                                 </VerticalStackLayout>
                             </Grid>
                         </Border>
 
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="50" Padding="46,0">
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource PetMachSpace12}">
                             <Button
-                                BackgroundColor="White"
-                                BorderColor="{StaticResource Border}"
-                                BorderWidth="1"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.PassCommand}"
+                                AutomationId="{Binding DogId, StringFormat='DiscoveryPass_{0}'}"
+                                Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.PassCommand}"
                                 CommandParameter="{Binding .}"
-                                CornerRadius="34"
-                                FontAttributes="None"
-                                FontSize="38"
-                                HeightRequest="68"
-                                Padding="0"
-                                Text="×"
-                                TextColor="{StaticResource Primary}"
-                                WidthRequest="68" />
+                                SemanticProperties.Description="{Binding Name, StringFormat='Ignorar o perfil de {0}'}"
+                                SemanticProperties.Hint="O perfil será removido somente após a confirmação do servidor"
+                                Style="{StaticResource PetMachSecondaryButtonStyle}"
+                                Text="Ignorar" />
                             <Button
                                 Grid.Column="1"
-                                BackgroundColor="White"
-                                BorderColor="{StaticResource Border}"
-                                BorderWidth="1"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.LikeCommand}"
+                                AutomationId="{Binding DogId, StringFormat='DiscoveryLike_{0}'}"
+                                Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.LikeCommand}"
                                 CommandParameter="{Binding .}"
-                                CornerRadius="34"
-                                FontAttributes="None"
-                                FontSize="31"
-                                HeightRequest="68"
-                                Padding="0"
-                                Text="♥"
-                                TextColor="{StaticResource Teal}"
-                                WidthRequest="68" />
+                                SemanticProperties.Description="{Binding Name, StringFormat='Curtir o perfil de {0}'}"
+                                SemanticProperties.Hint="Envia uma curtida e informa se houve match"
+                                Style="{StaticResource PetMachPrimaryButtonStyle}"
+                                Text="Curtir" />
                         </Grid>
                         <Button
-                            BackgroundColor="Transparent"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.BlockCommand}"
+                            AutomationId="{Binding DogId, StringFormat='DiscoveryBlock_{0}'}"
+                            Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.BlockCommand}"
                             CommandParameter="{Binding .}"
-                            FontAttributes="None"
-                            FontSize="11"
-                            HeightRequest="30"
-                            Text="Bloquear este tutor"
-                            TextColor="{StaticResource TextSecondary}" />
+                            SemanticProperties.Description="{Binding Name, StringFormat='Bloquear o tutor de {0}'}"
+                            SemanticProperties.Hint="Oculta os perfis do tutor e encerra conexões ativas"
+                            Style="{StaticResource PetMachDestructiveButtonStyle}"
+                            Text="Bloquear este tutor" />
                     </VerticalStackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <ActivityIndicator Grid.Row="3" Color="{StaticResource Primary}" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-        <VerticalStackLayout Grid.Row="4" Spacing="2">
-            <Label FontSize="12" HorizontalTextAlignment="Center" Text="{Binding StatusMessage}" TextColor="{StaticResource Danger}" />
-            <Label FontSize="10" HorizontalTextAlignment="Center" Text="Sua localização exata nunca é compartilhada." TextColor="{StaticResource TextSecondary}" />
+        <ActivityIndicator
+            Grid.Row="3"
+            AutomationId="DiscoveryPaginationProgress"
+            IsRunning="{Binding IsPaging}"
+            IsVisible="{Binding IsPaging}"
+            SemanticProperties.Description="Carregando mais sugestões"
+            Style="{StaticResource PetMachLoadingIndicatorStyle}" />
+
+        <VerticalStackLayout
+            Grid.Row="4"
+            Spacing="{StaticResource PetMachSpace8}">
+            <components:StateView
+                AutomationId="DiscoverySuccessFeedback"
+                IsVisible="{Binding HasSuccessFeedback}"
+                Kind="Success"
+                Message="{Binding StatusMessage}"
+                SemanticProperties.Description="{Binding StatusMessage}"
+                Title="Ação concluída" />
+            <components:StateView
+                AutomationId="DiscoveryErrorFeedback"
+                IsVisible="{Binding HasErrorFeedback}"
+                Kind="Error"
+                Message="{Binding StatusMessage}"
+                SemanticProperties.Description="{Binding StatusMessage}"
+                Title="Ação não concluída" />
+            <Label
+                HorizontalTextAlignment="Center"
+                SemanticProperties.Description="Sua localização exata nunca é compartilhada"
+                Style="{StaticResource PetMachCaptionStyle}"
+                Text="Sua localização exata nunca é compartilhada." />
         </VerticalStackLayout>
     </Grid>
 </ContentPage>

@@ -20,7 +20,7 @@ Planejado:
 - Identity and session — **Planned**
 - Tutor and pet profiles — **Planned**
 - Health — **Planned**
-- Discovery and matches — **Planned**
+- [PTM-010 — Discovery Experience 2.0](discovery.md) — **Working Draft**
 - Chat and meetings — **Planned**
 - Partners and reservations — **Planned**
 - Adoption — **Planned**
